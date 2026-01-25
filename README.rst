@@ -1,0 +1,136 @@
+=============================
+python-takserver-api
+=============================
+
+!!!! READ ME FIRST: Start by going to the "Development" section at end of this document !!!!
+
+!!!! FIXME: You MUST edit this file, read it through *with thought* !!!!
+
+!!!! FIXME: Check CI config file, should you change the repo pointer ?? !!!!
+
+!!!! FIXME: Check pyroject.toml: repo pointer, license, authors etc !!!!
+
+
+Python module for talking to a (tak.gov) tak server
+
+
+Docker
+------
+
+For more controlled deployments and to get rid of "works on my computer" -syndrome, we always
+make sure our software works under docker.
+
+It's also a quick way to get started with a standard development environment.
+
+SSH agent forwarding
+^^^^^^^^^^^^^^^^^^^^
+
+We need buildkit_::
+
+    export DOCKER_BUILDKIT=1
+
+.. _buildkit: https://docs.docker.com/develop/develop-images/build_enhancements/
+
+And also the exact way for forwarding agent to running instance is different on OSX::
+
+    export DOCKER_SSHAGENT="-v /run/host-services/ssh-auth.sock:/run/host-services/ssh-auth.sock -e SSH_AUTH_SOCK=/run/host-services/ssh-auth.sock"
+
+and Linux::
+
+    export DOCKER_SSHAGENT="-v $SSH_AUTH_SOCK:$SSH_AUTH_SOCK -e SSH_AUTH_SOCK"
+
+Creating a development container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Build image, create container and start it::
+
+    docker build --ssh default --target devel_shell -t python_takserver_api:devel_shell .
+    docker create --name python_takserver_api_devel -v "$(pwd):/app" -it $(echo $DOCKER_SSHAGENT) python_takserver_api:devel_shell
+    docker start -i python_takserver_api_devel
+
+pre-commit considerations
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If working in Docker instead of native env you need to run the pre-commit checks in docker too::
+
+    docker exec -i python_takserver_api_devel /bin/bash -c "pre-commit install --install-hooks"
+    docker exec -i python_takserver_api_devel /bin/bash -c "pre-commit run --all-files"
+
+You need to have the container running, see above. Or alternatively use the docker run syntax but using
+the running container is faster::
+
+    docker run --rm -it -v "$(pwd):/app" python_takserver_api:devel_shell -c "pre-commit run --all-files"
+
+Test suite
+^^^^^^^^^^
+
+You can use the devel shell to run py.test when doing development, for CI use
+the "tox" target in the Dockerfile::
+
+    docker build --ssh default --target tox -t python_takserver_api:tox .
+    docker run --rm -it -v "$(pwd):/app" $(echo $DOCKER_SSHAGENT) python_takserver_api:tox
+
+Production docker
+^^^^^^^^^^^^^^^^^
+
+!!! FIXME: Remove the repo init from this document after you have done it. !!!
+
+There's a "production" target as well for running the application, remember to change that
+architecture tag to arm64 if building on ARM::
+
+    docker build --ssh default --target production -t python_takserver_api:latest .
+    docker run -it --name python_takserver_api python_takserver_api:amd64-latest
+
+Alpine considerations
+^^^^^^^^^^^^^^^^^^^^^
+
+Alpine images are much more lightweight than Debian/Ubuntu ones so they are preferred where possible.
+There are a few potential issues however:
+
+  - Compiled extensions not available as wheels. This is mostly mitigated by our own wheel builder.
+  - Compiled extensions not compiling under Alpine. Alpine does not have certain nonstandard extensions to libc
+    enabled by default, poorly written extensions will fail to compile because they depend on these extensions
+    and do not explicitly request them to be enabled.
+  - Poetry lockfile might need to be updated by running poetry inside Alpine Docker (use devel_shell above)
+
+
+Development
+-----------
+
+!!! FIXME: Remove the repo init from this document after you have done it. !!!
+
+TLDR:
+
+- Create and activate a Python 3.13 virtualenv (assuming virtualenvwrapper)::
+
+    mkvirtualenv -p $(which python3.13) my_virtualenv
+
+- Init your repo (first create it on-line and make note of the remote URI)::
+
+    git init && git add .  # This should have been done automatically by cookiecutter
+    git commit -m 'Cookiecutter stubs'
+    git remote add origin MYREPOURI
+    git branch -m main
+    git push origin main
+
+- change to a branch::
+
+    git checkout -b my_branch
+
+- install Poetry: https://python-poetry.org/docs/#installation
+- Install project deps and pre-commit hooks::
+
+    poetry install
+    git add poetry.lock
+    pre-commit install --install-hooks
+    pre-commit run --all-files
+
+If you get weird errors about missing packages from pre-commit try running it with "poetry run pre-commit".
+
+- Ready to go.
+
+Remember to activate your virtualenv whenever working on the repo, this is needed
+because pylint and mypy pre-commit hooks use the "system" python for now (because reasons).
+
+Running "pre-commit run --all-files" and "py.test -v" regularly during development and
+especially before committing will save you some headache.

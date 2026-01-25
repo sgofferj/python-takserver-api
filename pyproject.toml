@@ -1,0 +1,85 @@
+[project]
+name = "python_takserver_api"
+version = "0.1.0"
+description = "Python module for talking to a (tak.gov) tak server"
+authors = [{name="Stefan Gofferje", email="stefan@gofferje.net" }]
+# FIXME: Doublecheck these values
+#homepage = "https://gitlab.com/advian-oss/python-takserver-api/"
+#repository = "https://gitlab.com/advian-oss/python-takserver-api/"
+#license = "FIXME"
+readme = "README.rst"
+dynamic = ["dependencies", "requires-python"]
+
+[project.scripts]
+python_takserver_api = "python_takserver_api.console:python_takserver_api_cli"
+
+
+[tool.black]
+line-length = 120
+target-version = ['py311']
+exclude = '''
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | _build
+    | buck-out
+    | build
+    | dist
+  )/
+  |  __pycache__
+)
+'''
+
+[tool.mypy]
+strict=true
+
+[tool.pytest.ini_options]
+junit_family="xunit2"
+addopts="--cov=python_takserver_api --cov-fail-under=65 --cov-branch"
+asyncio_mode="strict"
+asyncio_default_fixture_loop_scope="function"
+
+[tool.pylint.format]
+max-line-length = 120
+
+[tool.pylint.design]
+max-parents = 10
+
+[tool.pylint.messages_control]
+disable=["fixme", "W1202", "C0209"]
+
+[tool.pylint.similarities]
+min-similarity-lines = 8
+ignore-imports = true
+
+[tool.coverage.run]
+omit = ["tests/*"]
+branch = true
+
+[tool.poetry.dependencies]
+python = "^3.11"
+libadvian = "^1.7"
+click = "^8.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3"
+coverage = "^7.8"
+pytest-cov = "^6.1"
+pylint = "^3.3"
+black = "^25.1"
+bandit = "^1.8"
+mypy = "^1.15"
+pre-commit = "^4.2"
+pytest-asyncio = ">=0.21,<1.0" # caret behaviour on 0.x is to lock to 0.x.*
+bump2version = "^1.0"
+detect-secrets = "^1.5"
+
+
+[build-system]
+requires = ["poetry-core>=2.1.0"]
+build-backend = "poetry.core.masonry.api"
