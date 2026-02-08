@@ -18,16 +18,19 @@
 """home-api - https://docs.tak.gov/api/takserver#tag/home-api"""
 
 from typing import Any
-import asyncio
 
 
-async def is_admin(self) -> bool:
-    """Check if the configured certificate has admin rights on the server"""
-    path = "/Marti/api/util/isAdmin"
-    url = self.api_base_url + path
-    headers = {"Content-Type": "application/json"}
-    s, r = await self.request("get", url, headers=headers)
-    if r == True:
-        return True
-    else:
-        return False
+# pylint: disable=too-few-public-methods
+class HomeApi:
+    """Home API wrapper"""
+
+    def __init__(self, server: Any) -> None:
+        self.server = server
+
+    async def is_admin(self) -> bool:
+        """Check if the configured certificate has admin rights on the server"""
+        path = "/Marti/api/util/isAdmin"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        _, r = await self.server.connection.request("get", url, headers=headers)
+        return bool(r)

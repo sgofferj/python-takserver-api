@@ -1,0 +1,6 @@
+Please examine the code in src/python-takserver-api.
+At the moment, the module contains of one class called server which includes functions from separate files which are separated by topic.
+Please reimplement those included files as subclasses.
+Make sure, the code complies with PEP-8 and remains asynchronous.
+Convert all class, function and variable names from CamelCase to snake_case if necessary.
+Create a separate file explanation.md in which you explain to a python beginner how you implemented the subclasses and how the self object from the main class is passed to the subclasses.
