@@ -19,6 +19,7 @@
 
 from __future__ import annotations
 from .tak_class import Server
+from .tak_mission_api import build_mission_package
 
-__all__ = ["Server"]
+__all__ = ["Server", "build_mission_package"]
 __version__ = "0.1.0"  # NOTE Use `bump2version --config-file patch` to bump versions correctly

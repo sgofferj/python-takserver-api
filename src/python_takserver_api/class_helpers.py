@@ -39,8 +39,14 @@ class ConnectionHelper:
         tcpconn = aiohttp.TCPConnector(ssl_context=sslcontext)
         return tcpconn
 
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
     async def request(
-        self, method: str, url: str, headers: dict[str, Any] | None = None, json: dict[str, Any] | None = None
+        self,
+        method: str,
+        url: str,
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | None = None,
+        data: str | None = None,
     ) -> tuple[int, Any]:
         """Performs an HTTP request"""
         try:
@@ -51,7 +57,10 @@ class ConnectionHelper:
                 case "post" | "POST":
                     r = await self.server.session.post(url, headers=headers, json=json)
                 case "put" | "PUT":
-                    r = await self.server.session.put(url, headers=headers, json=json)
+                    if data is not None:
+                        r = await self.server.session.put(url, headers=headers, data=data)
+                    else:
+                        r = await self.server.session.put(url, headers=headers, json=json)
                 case "delete" | "DELETE":
                     r = await self.server.session.delete(url, headers=headers)
 
