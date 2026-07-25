@@ -27,8 +27,8 @@ class ConnectionHelper:
 
     def __init__(self, server: Any, cert: str, key: str) -> None:
         self.server = server
-        self.cert = cert
-        self.key = key
+        self.cert = cert.strip()
+        self.key = key.strip()
 
     def get_ssl_context(self) -> aiohttp.TCPConnector:
         """Returns an SSL context for the connection"""

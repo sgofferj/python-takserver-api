@@ -20,7 +20,6 @@
 
 import io
 import json
-import base64
 import zipfile
 import uuid
 import time
@@ -173,8 +172,7 @@ class MissionApi:
         if classification:
             path += f"&classification={classification}"
         url = self.server.api_base_url + path
-        headers = {"Content-Type": "application/json"}
-        s, r = await self.server.connection.request("put", url, headers=headers)
+        s, r = await self.server.connection.request("put", url)
         return s, r
 
     # pylint: disable=too-many-arguments, too-many-positional-arguments
@@ -246,7 +244,6 @@ class MissionApi:
         """
         path = f"/Marti/api/missions/{name}/contents/missionpackage?creatorUid={creator_uid}"
         url = self.server.api_base_url + path
-        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
-        body = json.dumps(base64.b64encode(mission_package).decode("utf-8"))
-        s, r = await self.server.connection.request("put", url, headers=headers, data=body)
+        headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/octet-stream"}
+        s, r = await self.server.connection.request("put", url, headers=headers, data=mission_package)
         return s, r
