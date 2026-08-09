@@ -117,6 +117,54 @@ def build_mission_package(
     return buf.getvalue()
 
 
+def _unwrap_mission(response: Any) -> Any:
+    """Unwrap a TAK Mission response envelope to the mission object.
+
+    TAK 5.x wraps mission payloads as ``{"version": 3, "type": "Mission",
+    "data": [mission_object], "nodeId": ...}``. This returns the inner
+    mission object when the envelope is present, otherwise the response
+    unchanged.
+    """
+    if isinstance(response, dict):
+        data = response.get("data")
+        if isinstance(data, list) and data:
+            return data[0]
+    return response
+
+
+def _content_keywords(
+    mission: Any,
+    *,
+    content_hash: str | None = None,
+    content_uid: str | None = None,
+) -> list[str] | None:
+    """Return the keyword list of a mission content item, or None if absent.
+
+    Exactly one of content_hash/content_uid must identify the item. Items
+    without a keywords field are treated as having an empty list.
+    """
+    mission_obj = _unwrap_mission(mission)
+    contents = mission_obj.get("contents") if isinstance(mission_obj, dict) else None
+    if not isinstance(contents, list):
+        return None
+    for item in contents:
+        if not isinstance(item, dict):
+            continue
+        if content_hash is not None and item.get("hash") == content_hash:
+            return _keyword_list(item)
+        if content_uid is not None and item.get("uid") == content_uid:
+            return _keyword_list(item)
+    return None
+
+
+def _keyword_list(item: dict[str, Any]) -> list[str]:
+    """Return the keywords field of a content item as a list of strings."""
+    keywords = item.get("keywords", [])
+    if isinstance(keywords, list):
+        return [k for k in keywords if isinstance(k, str)]
+    return []
+
+
 def _query(**params: Any) -> str:
     """Build a URL query string from non-None params.
 
@@ -633,6 +681,58 @@ class MissionApi:
         url = self.server.api_base_url + path
         s, r = await self.server.connection.request("delete", url)
         return s, r
+
+    async def delete_content_keyword_by_hash(
+        self,
+        name: str,
+        content_hash: str,
+        keyword: str,
+        creator_uid: str | None = None,
+    ) -> tuple[int, Any]:
+        """Removes a single keyword from a mission content item (by hash).
+
+        The TAK API only supports replacing the whole keyword list or
+        removing all keywords of a content item, so this convenience helper
+        reads the current list from the mission, removes the keyword and
+        writes the reduced list back.
+
+        Returns (404, message) if the content item does not exist in the
+        mission. Deleting a keyword that is not present is a no-op that
+        returns (200, current_keywords) without touching the server.
+        """
+        status, mission = await self.get_mission(name)
+        if status != 200:
+            return status, mission
+        keywords = _content_keywords(mission, content_hash=content_hash)
+        if keywords is None:
+            return 404, f"content {content_hash!r} not found in mission {name!r}"
+        if keyword not in keywords:
+            return 200, keywords
+        remaining = [k for k in keywords if k != keyword]
+        return await self.set_content_keywords(name, content_hash, remaining, creator_uid)
+
+    async def delete_content_keyword_by_uid(
+        self,
+        name: str,
+        uid: str,
+        keyword: str,
+        creator_uid: str | None = None,
+    ) -> tuple[int, Any]:
+        """Removes a single keyword from a mission content item (by UID).
+
+        Same semantics as delete_content_keyword_by_hash(), identifying the
+        content item by its UID instead of its hash.
+        """
+        status, mission = await self.get_mission(name)
+        if status != 200:
+            return status, mission
+        keywords = _content_keywords(mission, content_uid=uid)
+        if keywords is None:
+            return 404, f"content {uid!r} not found in mission {name!r}"
+        if keyword not in keywords:
+            return 200, keywords
+        remaining = [k for k in keywords if k != keyword]
+        return await self.set_uid_keywords(name, uid, remaining, creator_uid)
 
     async def copy_mission(
         self,
