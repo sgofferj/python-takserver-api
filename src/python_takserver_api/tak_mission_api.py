@@ -19,7 +19,6 @@
 """Mission API - https://docs.tak.gov/api/takserver#tag/mission-api"""
 
 import io
-import json
 import zipfile
 import uuid
 import time

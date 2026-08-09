@@ -1,6 +1,24 @@
 # IDE settings
 .idea
 
+# AI agent context - must never be tracked
+AGENTS.md
+
+# Secrets & certificates - never commit these
+/test-secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.p8
+*.crt
+*.cer
+*.der
+*.jks
+*.keystore
+*.truststore
+*.pkcs12
+
 config*.toml
 config*.yml
 

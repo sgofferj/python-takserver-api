@@ -27,6 +27,7 @@ repos:
     -   id: check-json
     -   id: check-merge-conflict
     -   id: check-symlinks
+    -   id: detect-private-key
     -   id: pretty-format-json
         args:
         - --autofix
@@ -41,13 +42,13 @@ repos:
     -   id: mypy
         language: system
         args: ["--strict"]
-        exclude: ^tests/
+        exclude: ^(tests|live_tests)/
 -   repo: https://github.com/pycqa/pylint
     rev: v3.3.7
     hooks:
     -   id: pylint
         language: system
-        exclude: ^tests/
+        exclude: ^(tests|live_tests)/
 -   repo: https://github.com/Lucas-C/pre-commit-hooks
     rev: v1.5.5
     hooks:
@@ -60,7 +61,7 @@ repos:
     hooks:
     - id: bandit
       args: ["--skip=B101"]
-      exclude: ^tests/
+      exclude: ^(tests|live_tests)/
 -   repo: https://github.com/Lucas-C/pre-commit-hooks-markup
     rev: v1.0.1
     hooks:
@@ -72,6 +73,18 @@ repos:
         language: system
         exclude: "poetry.lock"
         # args: ['--baseline', '.secrets.baseline']
+-   repo: https://github.com/gitleaks/gitleaks
+    rev: v8.27.0
+    hooks:
+    -   id: gitleaks
+        args: ["--verbose"]
+-   repo: local
+    hooks:
+    -   id: forbid-sensitive-files
+        name: forbid key/certificate files
+        entry: 'Sensitive key/certificate file staged - pems, keys, p12s, crts, keystores etc. must never be committed.'
+        language: fail
+        files: '\.(pem|key|p12|pfx|p8|crt|cer|der|jks|keystore|truststore|pkcs12)$'
 -   repo: https://github.com/shellcheck-py/shellcheck-py
     rev: v0.10.0.1
     hooks:

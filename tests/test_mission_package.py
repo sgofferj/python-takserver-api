@@ -202,9 +202,6 @@ async def test_mission_api_class() -> None:
 @pytest.mark.asyncio
 async def test_add_mission_package_http_error() -> None:
     """add_mission_package returns error tuple when server returns >=400"""
-    import json
-    import base64
-
     from python_takserver_api.tak_mission_api import MissionApi
 
     class MockResponse:  # noqa: N801
@@ -219,9 +216,7 @@ async def test_add_mission_package_http_error() -> None:
 
     class MockSession:  # noqa: N801
         async def put(self, url: str, **kwargs: Any) -> MockResponse:  # noqa: A003
-            parsed = json.loads(kwargs.get("data", ""))
-            assert isinstance(parsed, str)
-            base64.b64decode(parsed)
+            assert kwargs.get("data") == b"test zip data"
             return MockResponse()
 
     class MockConnection:  # noqa: N801
