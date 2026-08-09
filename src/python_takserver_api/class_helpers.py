@@ -45,7 +45,7 @@ class ConnectionHelper:
         method: str,
         url: str,
         headers: dict[str, Any] | None = None,
-        json: dict[str, Any] | None = None,
+        json: dict[str, Any] | list[Any] | None = None,
         data: str | None = None,
     ) -> tuple[int, Any]:
         """Performs an HTTP request"""
@@ -55,7 +55,10 @@ class ConnectionHelper:
                 case "get" | "GET":
                     r = await self.server.session.get(url, headers=headers)
                 case "post" | "POST":
-                    r = await self.server.session.post(url, headers=headers, json=json)
+                    if data is not None:
+                        r = await self.server.session.post(url, headers=headers, data=data)
+                    else:
+                        r = await self.server.session.post(url, headers=headers, json=json)
                 case "put" | "PUT":
                     if data is not None:
                         r = await self.server.session.put(url, headers=headers, data=data)
