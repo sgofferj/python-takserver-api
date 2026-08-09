@@ -14,6 +14,32 @@ python-takserver-api
 Python module for talking to a (tak.gov) tak server
 
 
+Tested TAK server version
+-------------------------
+
+The current state of this library is tested against a real TAK server running
+**5.7-RELEASE-43-HEAD** (version reported by ``/Marti/api/version``, verified
+2026-08-09).
+
+The API specification used as the development baseline is
+``tests/openapispec.json``, pulled live from the test server's
+``/v3/api-docs`` endpoint.
+
+Live integration tests
+----------------------
+
+The live tests in ``live_tests/`` are never part of CI; they run only against
+the developer's own TAK server. Configure that server in an untracked ``.env``
+file in the repository root (``.env`` is gitignored)::
+
+    TAK_LIVE_HOST=tak.example.com
+    TAK_LIVE_CERT=path/to/client.pem
+    TAK_LIVE_KEY=path/to/client.key
+
+Without a complete ``.env`` the live tests skip automatically. Never commit
+the server address or any credentials.
+
+
 Docker
 ------
 

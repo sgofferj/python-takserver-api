@@ -40,9 +40,12 @@ strict=true
 
 [tool.pytest.ini_options]
 junit_family="xunit2"
-addopts="--cov=python_takserver_api --cov-fail-under=65 --cov-branch"
+addopts="--cov=python_takserver_api --cov-fail-under=65 --cov-branch -m 'not live'"
 asyncio_mode="strict"
 asyncio_default_fixture_loop_scope="function"
+markers = [
+  "live: integration tests against a real TAK server; run locally only via `pytest live_tests/ -m live`",
+]
 
 [tool.pylint.format]
 max-line-length = 120
@@ -65,6 +68,7 @@ branch = true
 python = "^3.11"
 libadvian = "^1.7"
 click = "^8.1"
+aiohttp = "^3.9"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.3"

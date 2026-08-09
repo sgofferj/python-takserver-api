@@ -1,0 +1,32 @@
+name: unit-tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  unit-tests:
+    name: unit-tests (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, ubuntu-24.04-arm]
+        python: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install poetry
+        run: pipx install poetry
+      - name: Install dependencies
+        run: poetry install --with dev
+      - name: Lint and format (pre-commit)
+        run: poetry run pre-commit run --all-files
+      - name: Unit tests
+        run: poetry run pytest tests/
+
+# NOTE: Live integration tests (live_tests/) run ONLY on the developer's
+# machine - they require the local, gitignored test-secrets/ credentials and
+# MUST NEVER be added to CI.

@@ -1,72 +1,6 @@
 {
   "components": {
     "schemas": {
-      "AccessFilterType": {
-        "properties": {
-          "folder": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "group": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object"
-      },
-      "Announce": {
-        "properties": {
-          "enable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "group": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "interval": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ip": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "port": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "svctype": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "uid": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "ApiResponseAuthenticationConfigInfo": {
         "properties": {
           "data": {
@@ -2232,202 +2166,6 @@
         },
         "type": "object"
       },
-      "Async": {
-        "properties": {
-          "enable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "async",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Auth": {
-        "properties": {
-          "default": {
-            "type": "string"
-          },
-          "dnusernameExtractorRegex": {
-            "type": "string"
-          },
-          "file": {
-            "$ref": "#/components/schemas/File",
-            "xml": {
-              "name": "File"
-            }
-          },
-          "ldap": {
-            "$ref": "#/components/schemas/Ldap"
-          },
-          "oauth": {
-            "$ref": "#/components/schemas/Oauth"
-          },
-          "x509AddAnonymous": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509addAnonymous"
-            }
-          },
-          "x509AssignAdminAllGroups": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509assignAdminAllGroups"
-            }
-          },
-          "x509CheckRevocation": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509checkRevocation"
-            }
-          },
-          "x509Groups": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509groups"
-            }
-          },
-          "x509GroupsDefaultRDN": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509groupsDefaultRDN"
-            }
-          },
-          "x509TokenAuth": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509tokenAuth"
-            }
-          },
-          "x509UseGroupCache": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509useGroupCache"
-            }
-          },
-          "x509UseGroupCacheDefaultActive": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509useGroupCacheDefaultActive"
-            }
-          },
-          "x509UseGroupCacheDefaultUpdatesActive": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509useGroupCacheDefaultUpdatesActive"
-            }
-          },
-          "x509UseGroupCacheRequiresActiveGroup": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509useGroupCacheRequiresActiveGroup"
-            }
-          },
-          "x509UseGroupCacheRequiresExtKeyUsage": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509useGroupCacheRequiresExtKeyUsage"
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "auth",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "AuthServer": {
-        "properties": {
-          "accessTokenName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "authEndpoint": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "clientId": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "issuer": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "key": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "redirectUri": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "refreshTokenName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "scope": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "secret": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "tokenEndpoint": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "trustAllCerts": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "AuthenticationConfigInfo": {
         "properties": {
           "groupBaseRDN": {
@@ -2502,68 +2240,6 @@
         },
         "type": "object"
       },
-      "Buffer": {
-        "properties": {
-          "latestSA": {
-            "$ref": "#/components/schemas/LatestSA"
-          },
-          "queue": {
-            "$ref": "#/components/schemas/Queue"
-          }
-        },
-        "required": [
-          "latestSA",
-          "queue"
-        ],
-        "type": "object",
-        "xml": {
-          "name": "buffer",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "CertificateConfig": {
-        "properties": {
-          "nameEntries": {
-            "$ref": "#/components/schemas/NameEntries"
-          }
-        },
-        "type": "object"
-      },
-      "CertificateSigning": {
-        "properties": {
-          "ca": {
-            "enum": [
-              "MICROSOFT_CA",
-              "TAK_SERVER"
-            ],
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "CA"
-            }
-          },
-          "certificateConfig": {
-            "$ref": "#/components/schemas/CertificateConfig"
-          },
-          "microsoftCAConfig": {
-            "$ref": "#/components/schemas/MicrosoftCAConfig",
-            "xml": {
-              "name": "MicrosoftCAConfig"
-            }
-          },
-          "takserverCAConfig": {
-            "$ref": "#/components/schemas/TAKServerCAConfig"
-          }
-        },
-        "required": [
-          "certificateConfig"
-        ],
-        "type": "object",
-        "xml": {
-          "name": "certificateSigning",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
       "CertificateSummary": {
         "properties": {
           "allowTokenAuth": {
@@ -2592,107 +2268,6 @@
         },
         "type": "object"
       },
-      "Citrap": {
-        "properties": {
-          "enableNotifications": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "nonsubscriberCotFilter": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "notificationCot": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "searchRadius": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "searchSecago": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "citrap",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Client": {
-        "properties": {
-          "authorities": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "authorizedGrantTypes": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "autoapprove": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "clientId": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "redirectUri": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "refreshTokenValidity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "resourceIds": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "scope": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "secret": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "ClientEndpoint": {
         "properties": {
           "callsign": {
@@ -2705,6 +2280,12 @@
           "lastStatus": {
             "type": "string"
           },
+          "role": {
+            "type": "string"
+          },
+          "team": {
+            "type": "string"
+          },
           "uid": {
             "type": "string"
           },
@@ -2713,221 +2294,6 @@
           }
         },
         "type": "object"
-      },
-      "Cluster": {
-        "properties": {
-          "cacheConfig": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "kubernetes": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "metricsIntervalSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "natsClusterID": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "natsURL": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "cluster",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Configuration": {
-        "properties": {
-          "async": {
-            "$ref": "#/components/schemas/Async"
-          },
-          "auth": {
-            "$ref": "#/components/schemas/Auth"
-          },
-          "buffer": {
-            "$ref": "#/components/schemas/Buffer"
-          },
-          "certificateSigning": {
-            "$ref": "#/components/schemas/CertificateSigning"
-          },
-          "citrap": {
-            "$ref": "#/components/schemas/Citrap"
-          },
-          "cluster": {
-            "$ref": "#/components/schemas/Cluster"
-          },
-          "dissemination": {
-            "$ref": "#/components/schemas/Dissemination"
-          },
-          "docs": {
-            "$ref": "#/components/schemas/Docs"
-          },
-          "email": {
-            "$ref": "#/components/schemas/Email"
-          },
-          "federation": {
-            "$ref": "#/components/schemas/Federation"
-          },
-          "ferry": {
-            "$ref": "#/components/schemas/Ferry"
-          },
-          "filter": {
-            "$ref": "#/components/schemas/Filter"
-          },
-          "forceLowConcurrency": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "geocache": {
-            "$ref": "#/components/schemas/Geocache"
-          },
-          "locate": {
-            "$ref": "#/components/schemas/Locate"
-          },
-          "logging": {
-            "$ref": "#/components/schemas/Logging"
-          },
-          "network": {
-            "$ref": "#/components/schemas/Network"
-          },
-          "plugins": {
-            "$ref": "#/components/schemas/Plugins"
-          },
-          "profile": {
-            "$ref": "#/components/schemas/Profile"
-          },
-          "repeater": {
-            "$ref": "#/components/schemas/Repeater"
-          },
-          "repository": {
-            "$ref": "#/components/schemas/Repository"
-          },
-          "security": {
-            "$ref": "#/components/schemas/Security"
-          },
-          "submission": {
-            "$ref": "#/components/schemas/Submission"
-          },
-          "subscription": {
-            "$ref": "#/components/schemas/Subscription"
-          },
-          "vbm": {
-            "$ref": "#/components/schemas/Vbm"
-          },
-          "webContent": {
-            "$ref": "#/components/schemas/WebContent"
-          },
-          "xmpp": {
-            "$ref": "#/components/schemas/Xmpp"
-          }
-        },
-        "required": [
-          "auth",
-          "buffer",
-          "dissemination",
-          "filter",
-          "network",
-          "repeater",
-          "repository",
-          "security",
-          "submission",
-          "subscription"
-        ],
-        "type": "object",
-        "xml": {
-          "name": "Configuration",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Connection": {
-        "properties": {
-          "password": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "queryBufferMaxMemoryPercentage": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "sslCert": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "sslEnabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "sslKey": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "sslMode": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "sslRootCert": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "url": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "username": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "connection",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
       },
       "ConnectionInfo": {
         "properties": {
@@ -3450,139 +2816,6 @@
         },
         "type": "object"
       },
-      "Connector": {
-        "properties": {
-          "allowBasicAuth": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowCredentials": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowHeaders": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowMethods": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowOrigins": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "clientAuth": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "crlFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableAdminUI": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableNonAdminUI": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableWebtak": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "header": {
-            "items": {
-              "$ref": "#/components/schemas/Header"
-            },
-            "type": "array"
-          },
-          "keystore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystoreFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "_name"
-            }
-          },
-          "port": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "tls": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststoreFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "useFederationTruststore": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "ContactApi": {
         "properties": {
           "groupName": {
@@ -3700,24 +2933,6 @@
           "timestamp": {
             "format": "date-time",
             "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "Crl": {
-        "properties": {
-          "crlFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "_name"
-            }
           }
         },
         "type": "object"
@@ -3960,48 +3175,6 @@
           "namespace": "http://bbn.com/marti/xml/config"
         }
       },
-      "Dissemination": {
-        "properties": {
-          "boundedSubscriptionWrite": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "smartRetry": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "dissemination",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Docs": {
-        "properties": {
-          "adminOnly": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "docs",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
       "DosLimitRule": {
         "properties": {
           "clientThresholdCount": {
@@ -4067,113 +3240,6 @@
           "name": "dropfilter",
           "namespace": "http://bbn.com/marti/xml/config"
         }
-      },
-      "Email": {
-        "properties": {
-          "from": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "host": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "logAlertsEnabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "logAlertsExtension": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "logAlertsSubject": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "logAlertsTo": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "password": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "port": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "registrationPort": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "supportEmail": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "supportName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "username": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "whitelist": {
-            "items": {
-              "$ref": "#/components/schemas/Whitelist"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "email",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Endpoint": {
-        "properties": {
-          "callsign": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "_name"
-            }
-          }
-        },
-        "type": "object"
       },
       "Envelope": {
         "properties": {
@@ -4351,49 +3417,6 @@
         },
         "type": "object"
       },
-      "FederateCA": {
-        "properties": {
-          "allowTokenAuth": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "fingerprint": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "inboundGroup": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "maxHops": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "outboundGroup": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "tokenAuthDuration": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "FederateCAGroupAssociation": {
         "properties": {
           "caId": {
@@ -4458,109 +3481,6 @@
         },
         "type": "object"
       },
-      "Federation": {
-        "properties": {
-          "allowDataFeedFederation": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowDuplicate": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowFederatedDelete": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowMissionFederation": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableDataPackageAndMissionFileFilter": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableFederation": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableMissionFederationDisruptionTolerance": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "federate": {
-            "items": {
-              "$ref": "#/components/schemas/Federate"
-            },
-            "type": "array"
-          },
-          "federateCA": {
-            "items": {
-              "$ref": "#/components/schemas/FederateCA"
-            },
-            "type": "array"
-          },
-          "federateOnlyPublicMissions": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "federationOutgoing": {
-            "items": {
-              "$ref": "#/components/schemas/FederationOutgoing"
-            },
-            "type": "array",
-            "xml": {
-              "name": "federation-outgoing"
-            }
-          },
-          "federationServer": {
-            "$ref": "#/components/schemas/FederationServer",
-            "xml": {
-              "name": "federation-server"
-            }
-          },
-          "fileFilter": {
-            "$ref": "#/components/schemas/FileFilter"
-          },
-          "missionDisruptionTolerance": {
-            "$ref": "#/components/schemas/MissionDisruptionTolerance",
-            "xml": {
-              "name": "mission-disruption-tolerance"
-            }
-          },
-          "missionFederationDisruptionToleranceRecencySeconds": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "required": [
-          "fileFilter"
-        ],
-        "type": "object",
-        "xml": {
-          "name": "federation",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
       "FederationConfigInfo": {
         "properties": {
           "allowDataFeedFederation": {
@@ -4590,7 +3510,10 @@
             "type": "boolean"
           },
           "federationTokenAuthentication": {
-            "$ref": "#/components/schemas/FederationTokenAuthentication"
+            "items": {
+              "$ref": "#/components/schemas/FederationTokenAuthentication"
+            },
+            "type": "array"
           },
           "fileExtension": {
             "items": {
@@ -4722,6 +3645,12 @@
               "attribute": true
             }
           },
+          "tls": {
+            "type": "boolean",
+            "xml": {
+              "attribute": true
+            }
+          },
           "tokenType": {
             "type": "string",
             "xml": {
@@ -4761,54 +3690,10 @@
         },
         "type": "object"
       },
-      "FederationServer": {
+      "FederationTokenAuthentication": {
         "properties": {
-          "coreVersion": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "federationPort": {
-            "items": {
-              "$ref": "#/components/schemas/FederationPort"
-            },
-            "type": "array",
-            "xml": {
-              "name": "federation-port"
-            }
-          },
-          "federationTokenAuthentication": {
-            "$ref": "#/components/schemas/FederationTokenAuthentication",
-            "xml": {
-              "name": "federation-token-authentication"
-            }
-          },
-          "healthCheckIntervalSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "httpsPort": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "initializationDelaySeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "maxMessageSizeBytes": {
-            "format": "int32",
-            "type": "integer",
+          "enabled": {
+            "type": "boolean",
             "xml": {
               "attribute": true
             }
@@ -4821,60 +3706,7 @@
             }
           },
           "tls": {
-            "$ref": "#/components/schemas/Tls"
-          },
-          "v1Enabled": {
             "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "v1enabled"
-            }
-          },
-          "v1Tls": {
-            "items": {
-              "$ref": "#/components/schemas/V1Tls"
-            },
-            "type": "array"
-          },
-          "v2Enabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "v2enabled"
-            }
-          },
-          "v2Port": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true,
-              "name": "v2port"
-            }
-          },
-          "webBaseUrl": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "required": [
-          "federationTokenAuthentication",
-          "tls"
-        ],
-        "type": "object"
-      },
-      "FederationTokenAuthentication": {
-        "properties": {
-          "enabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "port": {
-            "format": "int32",
-            "type": "integer",
             "xml": {
               "attribute": true
             }
@@ -5030,67 +3862,11 @@
           "name": "feed"
         }
       },
-      "Ferry": {
-        "properties": {
-          "enable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "endpoint": {
-            "items": {
-              "$ref": "#/components/schemas/Endpoint"
-            },
-            "type": "array"
-          },
-          "stale": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "webserver": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "ferry",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "File": {
-        "properties": {
-          "location": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "FileConfigurationModel": {
         "properties": {
           "uploadSizeLimit": {
             "format": "int32",
             "type": "integer"
-          }
-        },
-        "type": "object"
-      },
-      "FileFilter": {
-        "properties": {
-          "fileExtension": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
           }
         },
         "type": "object"
@@ -5158,54 +3934,6 @@
         "type": "object",
         "xml": {
           "name": "flowtag",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Geocache": {
-        "properties": {
-          "cacheDir": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "connectId": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "maxSizeOfCacheInMb": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "maxTilesPerGoal": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "numThreads": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "geocache",
           "namespace": "http://bbn.com/marti/xml/config"
         }
       },
@@ -5313,6 +4041,12 @@
             },
             "type": "array"
           },
+          "filterTAKClients": {
+            "type": "boolean",
+            "xml": {
+              "attribute": true
+            }
+          },
           "maxAltitude": {
             "format": "double",
             "type": "number",
@@ -5388,23 +4122,6 @@
         "properties": {
           "groupname": {
             "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "Header": {
-        "properties": {
-          "key": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "value": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
           }
         },
         "type": "object"
@@ -5745,6 +4462,12 @@
       },
       "JwtTokenRequestModel": {
         "properties": {
+          "attributes": {
+            "additionalProperties": {
+              "type": "object"
+            },
+            "type": "object"
+          },
           "expiration": {
             "format": "int64",
             "type": "integer"
@@ -5764,243 +4487,6 @@
         },
         "type": "object"
       },
-      "LatestSA": {
-        "properties": {
-          "enable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "validateClientUid": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
-      "Ldap": {
-        "properties": {
-          "callsignAttribute": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "colorAttribute": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "connectionPoolTimeout": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "dnAttributeName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableConnectionPool": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "filtergroup": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "groupBaseRDN": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "groupNameExtractorRegex": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "groupObjectClass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "groupprefix": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ldapSecurityType": {
-            "enum": [
-              "NONE",
-              "SIMPLE"
-            ],
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ldapsTruststore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ldapsTruststoreFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ldapsTruststorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "loginWithEmail": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "matchGroupInChain": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "nameAttr": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "nameAttrAD": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "nestedGroupLookup": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "postMissionEventsAsPublic": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "readGroupSuffix": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "readOnlyGroup": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "roleAttribute": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "serviceAccountCredential": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "serviceAccountDN": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "style": {
-            "enum": [
-              "AD",
-              "DS"
-            ],
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "updateinterval": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "url": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "userBaseRDN": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "userObjectClass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "userstring": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "writeGroupSuffix": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "x509AddAnonymous": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509addAnonymous"
-            }
-          },
-          "x509Groups": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "x509groups"
-            }
-          }
-        },
-        "type": "object"
-      },
       "LdapGroup": {
         "properties": {
           "cn": {
@@ -6014,58 +4500,6 @@
           }
         },
         "type": "object"
-      },
-      "Locate": {
-        "properties": {
-          "addToMission": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "broadcast": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cotType": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "cot-type"
-            }
-          },
-          "enabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "group": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "mission": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "requireLogin": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "locate",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
       },
       "Location": {
         "properties": {
@@ -6138,51 +4572,6 @@
           }
         },
         "type": "object"
-      },
-      "Logging": {
-        "properties": {
-          "auditLoggingEnabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "doubleSpaced": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "httpAccessEnabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "jsonFormatEnabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "lineSeparatorIncluded": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "prettyLoggingEnabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "logging",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
       },
       "MapLayer": {
         "properties": {
@@ -6327,53 +4716,6 @@
           },
           "sslRootCert": {
             "type": "string"
-          }
-        },
-        "type": "object"
-      },
-      "MicrosoftCAConfig": {
-        "properties": {
-          "password": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "svcUrl": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "templateName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "trustAllHosts": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "username": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
           }
         },
         "type": "object"
@@ -6677,17 +5019,6 @@
         },
         "type": "object"
       },
-      "MissionDisruptionTolerance": {
-        "properties": {
-          "mission": {
-            "items": {
-              "$ref": "#/components/schemas/Mission"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object"
-      },
       "MissionFeed": {
         "properties": {
           "dataFeedUid": {
@@ -6840,330 +5171,6 @@
         },
         "type": "object"
       },
-      "MissionTls": {
-        "properties": {
-          "keystore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystoreFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "missionTls",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "NameEntries": {
-        "properties": {
-          "nameEntry": {
-            "items": {
-              "$ref": "#/components/schemas/NameEntry"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object"
-      },
-      "NameEntry": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "value": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
-      "Network": {
-        "properties": {
-          "allowAllOrigins": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "alwaysArchiveMissionCot": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "announce": {
-            "$ref": "#/components/schemas/Announce"
-          },
-          "apiAsyncExecutorMultiplier": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "apiAsyncExecutorQueueSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cloudwatchEnable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cloudwatchMetricsBatchSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cloudwatchName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cloudwatchNamespace": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "connector": {
-            "items": {
-              "$ref": "#/components/schemas/Connector"
-            },
-            "type": "array"
-          },
-          "datafeed": {
-            "items": {
-              "$ref": "#/components/schemas/DataFeed"
-            },
-            "type": "array"
-          },
-          "enableHSTS": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enterpriseSyncSizeDownloadTimeoutMillis": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enterpriseSyncSizeLimitMB": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enterpriseSyncSizeUploadTimeoutMillis": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "esyncCotFilter": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "esyncEnableCache": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "esyncEnableCotFilter": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "extWebContentDir": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "filter": {
-            "$ref": "#/components/schemas/Filter"
-          },
-          "httpSessionTimeoutMinutes": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "input": {
-            "items": {
-              "$ref": "#/components/schemas/Input"
-            },
-            "type": "array"
-          },
-          "missionAllowGroupChange": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "MissionAllowGroupChange"
-            }
-          },
-          "missionBrokerUidAddsFromApi": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "MissionBrokerUidAddsFromApi"
-            }
-          },
-          "missionCopTool": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "missionCreateGroupsRegex": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "MissionCreateGroupsRegex"
-            }
-          },
-          "missionDeleteRequiresOwner": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "MissionDeleteRequiresOwner"
-            }
-          },
-          "missionPackageAutoExtractSizeLimitMB": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "missionStrictUidMissionMembership": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "MissionStrictUidMissionMembership"
-            }
-          },
-          "missionUseGroupsForContents": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true,
-              "name": "MissionUseGroupsForContents"
-            }
-          },
-          "multicastTTL": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "reportTimeoutCheckIntervalSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "reportTimeoutSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "serverId": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "takServerHost": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "tomcatMaxPool": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "tomcatPoolIdleToMax": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "tomcatPoolMultiplier": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "useLinuxEpoll": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "version": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "webCiphers": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "network",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
       "NewUserModel": {
         "properties": {
           "groupList": {
@@ -7193,171 +5200,7 @@
         },
         "type": "object"
       },
-      "Oauth": {
-        "properties": {
-          "allowAccessTokenRetrieval": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "allowUriQueryParameter": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "authServer": {
-            "items": {
-              "$ref": "#/components/schemas/AuthServer"
-            },
-            "type": "array"
-          },
-          "client": {
-            "items": {
-              "$ref": "#/components/schemas/Client"
-            },
-            "type": "array"
-          },
-          "groupprefix": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "groupsClaim": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "loginWithEmail": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "oauthAddAnonymous": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "oauthUseGroupCache": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "openIdDiscoveryConfiguraiton": {
-            "items": {
-              "$ref": "#/components/schemas/OpenIdDiscoveryConfiguraiton"
-            },
-            "type": "array"
-          },
-          "readGroupSuffix": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "readOnlyGroup": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "scopeClaim": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "useTakServerLoginPage": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "usernameClaim": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "webtakScope": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "writeGroupSuffix": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "oauth",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "OpenIdDiscoveryConfiguraiton": {
-        "properties": {
-          "accessTokenName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "clientId": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "configurationUri": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "redirectUri": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "refreshTokenName": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "secret": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "trustAllCerts": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
-      "OpoenIdConfigufation": {
+      "OpenIdConfiguration": {
         "properties": {
           "authorization_endpoint": {
             "type": "string"
@@ -7422,6 +5265,9 @@
             "format": "int32",
             "type": "integer"
           },
+          "tls": {
+            "type": "boolean"
+          },
           "tokenType": {
             "type": "string"
           },
@@ -7478,34 +5324,6 @@
           }
         },
         "type": "object"
-      },
-      "Plugins": {
-        "properties": {
-          "allowPluginContacts": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "pluginContactCleanupFrequencySeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "usePluginMessageQueue": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "plugins",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
       },
       "Point": {
         "properties": {
@@ -7671,18 +5489,6 @@
         },
         "type": "object"
       },
-      "Priority": {
-        "properties": {
-          "levels": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "Profile": {
         "properties": {
           "active": {
@@ -7759,393 +5565,6 @@
         "type": "object",
         "xml": {
           "name": "qos",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Queue": {
-        "properties": {
-          "cacheCotInRepository": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cacheLastTouchedExpiryMinutes": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "caffeineFileCacheSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "codecViewPendingCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "codecWrapperCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "contactCacheRecencyLimitSeconds": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "contactCacheUpdateRateLimitSeconds": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "coreExecutorCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cotCacheBatchSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cotCacheMaxMemorySize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "cotCacheMaxSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "defaultCoreMaxPoolFactor": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "defaultExecQueueSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "defaultMaxPoolFactor": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "defaultMaxPoolSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "disconnectOnFull": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "disconnectOnPendingExceeded": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableCacheGroup": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableCacheGroupPerName": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableClientEndpointCache": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableGetAllMissionsCacheWarmer": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableIndividualHydratedMissionsCacheWarmer": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableStoreForwardChat": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "flushInterval": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "groupDescriptionCacheSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "inboundCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "maxWriteQueueSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "messageTimestampCacheSizeItems": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "messageWriteExecutorQueueSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "messageWriteQueueSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "missionCacheLockTimeoutMilliseconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "missionConcurrentDownloadLimit": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "missionContentLimit": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "missionUidLimit": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "nearCacheMaxSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "oauthConfigurationsCacheSeconds": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "oauthPublicKeyCacheSeconds": {
-            "format": "int32",
-            "type": "integer"
-          },
-          "onHeapEnabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "outboundCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "pluginDatafeedCacheSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "priority": {
-            "$ref": "#/components/schemas/Priority"
-          },
-          "pubSubCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "queueSizeIncrement": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "queueSizeInitial": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "queueSizeMaxCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "springCacheBatchSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "springCacheMaxMemorySize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "springCacheMaxSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "springCacheSizeScalingFactor": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "storeForwardQueryBufferMs": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "storeForwardSendBufferMs": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "tcpWriteQueueCapacity": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "throwOnAssertionFail": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "websocketMaxBinaryMessageBufferSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "websocketMaxSessionIdleTimeout": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "websocketSendBufferSizeLimit": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "websocketSendTimeoutMs": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "queue",
           "namespace": "http://bbn.com/marti/xml/config"
         }
       },
@@ -8384,175 +5803,6 @@
         },
         "type": "object"
       },
-      "RepeatableType": {
-        "properties": {
-          "cancelTest": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "cancel-test"
-            }
-          },
-          "initiateTest": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "initiate-test"
-            }
-          },
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "_name"
-            }
-          }
-        },
-        "type": "object"
-      },
-      "Repeater": {
-        "properties": {
-          "enable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "maxAllowedRepeatables": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "periodMillis": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "repeatableType": {
-            "items": {
-              "$ref": "#/components/schemas/RepeatableType"
-            },
-            "type": "array"
-          },
-          "staleDelayMillis": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "repeater",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Repository": {
-        "properties": {
-          "archive": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "connection": {
-            "$ref": "#/components/schemas/Connection"
-          },
-          "connectionPoolAutoSize": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "contactCacheMaxClearRateSeconds": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "dbConnectionMaxIdleMs": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "dbConnectionMaxLifetimeMs": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "dbTimeoutMs": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enable": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enableCallsignAudit": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "iconsetDir": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "insertionBatchSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "numDbConnections": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "poolScaleFactor": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "primaryKeyBatchSize": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "required": [
-          "connection"
-        ],
-        "type": "object",
-        "xml": {
-          "name": "repository",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
       "Resource": {
         "properties": {
           "altitude": {
@@ -8646,24 +5896,6 @@
         "type": "object",
         "xml": {
           "name": "scrubber",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Security": {
-        "properties": {
-          "missionTls": {
-            "items": {
-              "$ref": "#/components/schemas/MissionTls"
-            },
-            "type": "array"
-          },
-          "tls": {
-            "$ref": "#/components/schemas/Tls"
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "security",
           "namespace": "http://bbn.com/marti/xml/config"
         }
       },
@@ -8790,64 +6022,6 @@
         },
         "type": "object"
       },
-      "Static": {
-        "properties": {
-          "address": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "federated": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "filter": {
-            "$ref": "#/components/schemas/Filter"
-          },
-          "filtergroup": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "iface": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "name": {
-            "type": "string",
-            "xml": {
-              "attribute": true,
-              "name": "_name"
-            }
-          },
-          "port": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "protocol": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "xpath": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "Streamingbroker": {
         "properties": {
           "enable": {
@@ -8860,54 +6034,6 @@
         "type": "object",
         "xml": {
           "name": "streamingbroker",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Submission": {
-        "properties": {
-          "dropMesssagesIfAnyServiceIsFull": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ignoreStaleMessages": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "validateXml": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "submission",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Subscription": {
-        "properties": {
-          "reloadPersistent": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "static": {
-            "items": {
-              "$ref": "#/components/schemas/Static"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "subscription",
           "namespace": "http://bbn.com/marti/xml/config"
         }
       },
@@ -9023,68 +6149,6 @@
         },
         "type": "object"
       },
-      "TAKServerCAConfig": {
-        "properties": {
-          "cacertificate": {
-            "type": "string"
-          },
-          "cakey": {
-            "type": "string"
-          },
-          "keystore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystoreFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "signatureAlg": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "useTokenExpiration": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "validityDays": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "validityHours": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "validityNotBeforeOffsetMinutes": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
       "TAKUser": {
         "properties": {
           "activated": {
@@ -9192,87 +6256,6 @@
         "type": "object",
         "xml": {
           "name": "thumbnail",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Tls": {
-        "properties": {
-          "ciphers": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "context": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "crl": {
-            "items": {
-              "$ref": "#/components/schemas/Crl"
-            },
-            "type": "array"
-          },
-          "enableOCSP": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keymanager": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystoreFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "keystorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "responderUrl": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststore": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststoreFile": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "truststorePass": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "tls",
           "namespace": "http://bbn.com/marti/xml/config"
         }
       },
@@ -9601,71 +6584,6 @@
         },
         "type": "object"
       },
-      "Vbm": {
-        "properties": {
-          "disableChatSharing": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "disableSASharing": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "enabled": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ismConnectTimeoutSeconds": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ismReadTimeoutSeconds": {
-            "format": "int64",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ismStrictEnforcing": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "ismUrl": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "networkClassification": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "returnCopsWithPublicMissions": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "vbm",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
       "VersionInfo": {
         "properties": {
           "branch": {
@@ -9752,111 +6670,6 @@
         "type": "object",
         "xml": {
           "name": "videoCollection"
-        }
-      },
-      "WebContent": {
-        "properties": {
-          "accessFilter": {
-            "items": {
-              "$ref": "#/components/schemas/AccessFilterType"
-            },
-            "type": "array"
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "webContent",
-          "namespace": "http://bbn.com/marti/xml/config"
-        }
-      },
-      "Whitelist": {
-        "properties": {
-          "domain": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "group": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "groups": {
-            "items": {
-              "type": "string"
-            },
-            "type": "array"
-          },
-          "privateGroup": {
-            "type": "boolean",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "token": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object"
-      },
-      "Xmpp": {
-        "properties": {
-          "takServerHost": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "takServerPort": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "xmppComponentRetryCount": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "xmppComponentRetryDelay": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "xmppHost": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "xmppPort": {
-            "format": "int32",
-            "type": "integer",
-            "xml": {
-              "attribute": true
-            }
-          },
-          "xmppSharedSecret": {
-            "type": "string",
-            "xml": {
-              "attribute": true
-            }
-          }
-        },
-        "type": "object",
-        "xml": {
-          "name": "xmpp",
-          "namespace": "http://bbn.com/marti/xml/config"
         }
       },
       "tmpStaticSub": {
@@ -9999,49 +6812,6 @@
         },
         "tags": [
           "security-authentication-api"
-        ]
-      }
-    },
-    "/Marti/api/cachedConfig": {
-      "get": {
-        "operationId": "getCachedCoreConfig",
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/Configuration"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        },
-        "tags": [
-          "config-api"
-        ]
-      }
-    },
-    "/Marti/api/cachedInputConfig": {
-      "get": {
-        "operationId": "getCachedInputConfig",
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "items": {
-                    "$ref": "#/components/schemas/Input"
-                  },
-                  "type": "array"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        },
-        "tags": [
-          "config-api"
         ]
       }
     },
@@ -10711,26 +7481,6 @@
         ]
       }
     },
-    "/Marti/api/config": {
-      "get": {
-        "operationId": "getCoreConfig",
-        "responses": {
-          "200": {
-            "content": {
-              "*/*": {
-                "schema": {
-                  "$ref": "#/components/schemas/Configuration"
-                }
-              }
-            },
-            "description": "OK"
-          }
-        },
-        "tags": [
-          "config-api"
-        ]
-      }
-    },
     "/Marti/api/contacts/all": {
       "get": {
         "operationId": "getAllContactsLite",
@@ -10982,6 +7732,38 @@
     "/Marti/api/cot": {
       "get": {
         "operationId": "getCotEvents",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "cot-api"
+        ]
+      },
+      "post": {
+        "operationId": "getCotEvents_1",
         "requestBody": {
           "content": {
             "application/json": {
@@ -14770,6 +11552,33 @@
         },
         "tags": [
           "ldap-api"
+        ]
+      }
+    },
+    "/Marti/api/groups/update": {
+      "post": {
+        "operationId": "bulkGroupsUpdated",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array",
+                "uniqueItems": true
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "subscription-api"
         ]
       }
     },
@@ -23716,7 +20525,7 @@
             "content": {
               "*/*": {
                 "schema": {
-                  "$ref": "#/components/schemas/OpoenIdConfigufation"
+                  "$ref": "#/components/schemas/OpenIdConfiguration"
                 }
               }
             },
@@ -23904,6 +20713,26 @@
     "/token/access": {
       "get": {
         "operationId": "getAccessToken",
+        "responses": {
+          "200": {
+            "content": {
+              "*/*": {
+                "schema": {
+                  "$ref": "#/components/schemas/ApiResponseString"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "o-auth-api"
+        ]
+      }
+    },
+    "/token/callsign": {
+      "get": {
+        "operationId": "getAccessTokenCallsign",
         "responses": {
           "200": {
             "content": {
@@ -24242,7 +21071,7 @@
   "servers": [
     {
       "description": "Generated server url",
-      "url": "https://127.0.0.1:17655"
+      "url": "https://takserver.local:8443"
     }
   ]
 }
