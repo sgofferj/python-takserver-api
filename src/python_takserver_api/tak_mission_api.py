@@ -24,9 +24,11 @@ import uuid
 import time
 
 from typing import Any
+from urllib.parse import urlencode
 
 
 # pylint: disable=too-many-arguments, too-many-positional-arguments, too-many-locals
+# pylint: disable=too-many-public-methods  # API wrapper: one method per endpoint
 def build_mission_package(
     name: str,
     mission_name: str,
@@ -115,15 +117,44 @@ def build_mission_package(
     return buf.getvalue()
 
 
+def _query(**params: Any) -> str:
+    """Build a URL query string from non-None params.
+
+    Booleans are rendered as ``true``/``false`` (TAK API convention), lists
+    become repeated parameters, and everything is URL-encoded.
+    """
+    parts: dict[str, Any] = {}
+    for key, value in params.items():
+        if value is None:
+            continue
+        if isinstance(value, bool):
+            value = "true" if value else "false"
+        parts[key] = value
+    if not parts:
+        return ""
+    return "?" + urlencode(parts, doseq=True)
+
+
 class MissionApi:
     """Mission API wrapper"""
 
     def __init__(self, server: Any) -> None:
         self.server = server
 
-    async def get_mission(self, name: str) -> tuple[int, Any]:
+    async def get_mission(
+        self,
+        name: str,
+        password: str | None = None,
+        changes: bool = False,
+        logs: bool = False,
+        secago: int | None = None,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> tuple[int, Any]:
         """Returns a mission"""
-        path = f"/Marti/api/missions/{name}"
+        path = f"/Marti/api/missions/{name}" + _query(
+            password=password, changes=changes, logs=logs, secago=secago, start=start, end=end
+        )
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("get", url, headers=headers)
@@ -245,4 +276,557 @@ class MissionApi:
         url = self.server.api_base_url + path
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/octet-stream"}
         s, r = await self.server.connection.request("put", url, headers=headers, data=mission_package)
+        return s, r
+
+    async def get_mission_count(
+        self,
+        password_protected: bool | None = None,
+        default_role: str | None = None,
+        tool: str | None = None,
+    ) -> tuple[int, Any]:
+        """Returns the number of missions on the server."""
+        path = "/Marti/api/missioncount" + _query(
+            passwordProtected=password_protected, defaultRole=default_role, tool=tool
+        )
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_names(
+        self,
+        password_protected: bool | None = None,
+        default_role: str | None = None,
+        tool: str | None = None,
+    ) -> tuple[int, Any]:
+        """Returns the names of all missions on the server."""
+        path = "/Marti/api/missions" + _query(passwordProtected=password_protected, defaultRole=default_role, tool=tool)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def delete_mission_by_guid(
+        self, guid: str, creator_uid: str | None = None, deep_delete: bool = False
+    ) -> tuple[int, Any]:
+        """Deletes a mission identified by GUID."""
+        path = "/Marti/api/missions" + _query(guid=guid, creatorUid=creator_uid, deepDelete=deep_delete)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def get_all_invitations(self, client_uid: str | None = None) -> tuple[int, Any]:
+        """Returns all mission invitations across all missions."""
+        path = "/Marti/api/missions/all/invitations" + _query(clientUid=client_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_all_logs(self) -> tuple[int, Any]:
+        """Returns the mission logs of all missions."""
+        path = "/Marti/api/missions/all/logs"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_all_subscriptions(self) -> tuple[int, Any]:
+        """Returns the subscriptions of all missions."""
+        path = "/Marti/api/missions/all/subscriptions"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_all_subscriptions_by_guid(self) -> tuple[int, Any]:
+        """Returns the subscriptions of all missions, keyed by mission GUID."""
+        path = "/Marti/api/missions/all/subscriptions/guid"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_invitations(self, client_uid: str) -> tuple[int, Any]:
+        """Returns mission invitations for a specific client UID."""
+        path = "/Marti/api/missions/invitations" + _query(clientUid=client_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_paged_missions(
+        self,
+        page: int | None = None,
+        pagesize: int | None = None,
+        sort: str | None = None,
+        name_filter: str | None = None,
+        uid_filter: str | None = None,
+        ascending: bool | None = None,
+        password_protected: bool | None = None,
+        default_role: str | None = None,
+        tool: str | None = None,
+    ) -> tuple[int, Any]:
+        """Returns a page of missions with filtering and sorting."""
+        path = "/Marti/api/pagedmissions" + _query(
+            page=page,
+            pagesize=pagesize,
+            sort=sort,
+            nameFilter=name_filter,
+            uidFilter=uid_filter,
+            ascending=ascending,
+            passwordProtected=password_protected,
+            defaultRole=default_role,
+            tool=tool,
+        )
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_log_entry(self, log_id: str) -> tuple[int, Any]:
+        """Returns a single mission log entry."""
+        path = f"/Marti/api/missions/logs/entries/{log_id}"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def delete_log_entry(self, log_id: str) -> tuple[int, Any]:
+        """Deletes a mission log entry."""
+        path = f"/Marti/api/missions/logs/entries/{log_id}"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def create_log_entry(self, log_entry: dict[str, Any]) -> tuple[int, Any]:
+        """Creates a mission log entry (see the LogEntry schema in the API spec)."""
+        path = "/Marti/api/missions/logs/entries"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("post", url, headers=headers, json=log_entry)
+        return s, r
+
+    async def update_log_entry(self, log_entry: dict[str, Any]) -> tuple[int, Any]:
+        """Updates a mission log entry (see the LogEntry schema in the API spec)."""
+        path = "/Marti/api/missions/logs/entries"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("put", url, headers=headers, json=log_entry)
+        return s, r
+
+    async def delete_mission(
+        self, name: str, creator_uid: str | None = None, deep_delete: bool = False
+    ) -> tuple[int, Any]:
+        """Deletes a mission. deep_delete also removes the mission content."""
+        path = f"/Marti/api/missions/{name}" + _query(creatorUid=creator_uid, deepDelete=deep_delete)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def get_mission_archive(self, name: str) -> tuple[int, Any]:
+        """Returns a ZIP archive of the mission's content."""
+        path = f"/Marti/api/missions/{name}/archive"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_changes(
+        self,
+        name: str,
+        secago: int | None = None,
+        start: str | None = None,
+        end: str | None = None,
+        squashed: bool = False,
+    ) -> tuple[int, Any]:
+        """Returns the change history of a mission."""
+        path = f"/Marti/api/missions/{name}/changes" + _query(secago=secago, start=start, end=end, squashed=squashed)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_children(self, name: str) -> tuple[int, Any]:
+        """Returns the child missions of a mission."""
+        path = f"/Marti/api/missions/{name}/children"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_contacts(self, name: str) -> tuple[int, Any]:
+        """Returns the contacts subscribed to a mission."""
+        path = f"/Marti/api/missions/{name}/contacts"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_cot(self, name: str, path: str | None = None) -> tuple[int, Any]:
+        """Returns CoT events of a mission, optionally filtered by CoT path."""
+        url_path = f"/Marti/api/missions/{name}/cot" + _query(path=path)
+        url = self.server.api_base_url + url_path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def set_mission_expiration(self, name: str, expiration: int | None = None) -> tuple[int, Any]:
+        """Sets the expiration time (epoch millis) of a mission."""
+        path = f"/Marti/api/missions/{name}/expiration" + _query(expiration=expiration)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("put", url)
+        return s, r
+
+    async def get_mission_kml(self, name: str, download: bool = False) -> tuple[int, Any]:
+        """Returns a KML representation of a mission's content."""
+        path = f"/Marti/api/missions/{name}/kml" + _query(download=download)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_parent(self, name: str) -> tuple[int, Any]:
+        """Returns the parent mission of a mission."""
+        path = f"/Marti/api/missions/{name}/parent"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def send_mission(self, name: str) -> tuple[int, Any]:
+        """Sends a mission to all subscribed users."""
+        path = f"/Marti/api/missions/{name}/send"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("post", url)
+        return s, r
+
+    async def set_content_keywords(
+        self, name: str, content_hash: str, keywords: list[str], creator_uid: str | None = None
+    ) -> tuple[int, Any]:
+        """Sets the keywords of a mission content item (identified by its hash)."""
+        path = f"/Marti/api/missions/{name}/content/{content_hash}/keywords" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("put", url, headers=headers, json=keywords)
+        return s, r
+
+    async def delete_content_keywords(
+        self, name: str, content_hash: str, creator_uid: str | None = None
+    ) -> tuple[int, Any]:
+        """Removes the keywords of a mission content item (identified by its hash)."""
+        path = f"/Marti/api/missions/{name}/content/{content_hash}/keywords" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def remove_mission_content_by_hash(
+        self, name: str, content_hash: str, creator_uid: str | None = None
+    ) -> tuple[int, Any]:
+        """Removes a mission content item identified by its hash."""
+        path = f"/Marti/api/missions/{name}/contents" + _query(hash=content_hash, creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def create_external_data(self, name: str, creator_uid: str, external_data: dict[str, Any]) -> tuple[int, Any]:
+        """Creates an external data entry in a mission (see ExternalMissionData in the API spec)."""
+        path = f"/Marti/api/missions/{name}/externaldata" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("post", url, headers=headers, json=external_data)
+        return s, r
+
+    async def delete_external_data(self, name: str, data_id: str, notes: str, creator_uid: str) -> tuple[int, Any]:
+        """Deletes an external data entry from a mission."""
+        path = f"/Marti/api/missions/{name}/externaldata/{data_id}" + _query(notes=notes, creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def change_external_data(
+        self,
+        name: str,
+        data_id: str,
+        creator_uid: str,
+        notes: str,
+        data: str | None = None,
+    ) -> tuple[int, Any]:
+        """Changes an external data entry in a mission."""
+        path = f"/Marti/api/missions/{name}/externaldata/{data_id}/change" + _query(creatorUid=creator_uid, notes=notes)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("post", url, headers=headers, data=data)
+        return s, r
+
+    async def invite_to_mission(self, name: str, creator_uid: str | None = None) -> tuple[int, Any]:
+        """Invites the current user to a mission."""
+        path = f"/Marti/api/missions/{name}/invite" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("post", url)
+        return s, r
+
+    async def set_mission_invite(
+        self,
+        name: str,
+        invite_type: str,
+        invitee: str,
+        creator_uid: str,
+        role: str | None = None,
+    ) -> tuple[int, Any]:
+        """Sets the invitation state of a user or group for a mission.
+
+        invite_type is either "user" or "group".
+        """
+        path = f"/Marti/api/missions/{name}/invite/{invite_type}/{invitee}" + _query(creatorUid=creator_uid, role=role)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("put", url)
+        return s, r
+
+    async def delete_mission_invite(
+        self, name: str, invite_type: str, invitee: str, creator_uid: str
+    ) -> tuple[int, Any]:
+        """Removes the invitation of a user or group for a mission.
+
+        invite_type is either "user" or "group".
+        """
+        path = f"/Marti/api/missions/{name}/invite/{invite_type}/{invitee}" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def set_mission_keywords(
+        self, name: str, keywords: list[str], creator_uid: str | None = None
+    ) -> tuple[int, Any]:
+        """Sets the keywords of a mission."""
+        path = f"/Marti/api/missions/{name}/keywords" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("put", url, headers=headers, json=keywords)
+        return s, r
+
+    async def delete_mission_keywords(self, name: str, creator_uid: str | None = None) -> tuple[int, Any]:
+        """Removes all keywords of a mission."""
+        path = f"/Marti/api/missions/{name}/keywords" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def delete_mission_keyword(self, name: str, keyword: str, creator_uid: str | None = None) -> tuple[int, Any]:
+        """Removes a single keyword from a mission."""
+        path = f"/Marti/api/missions/{name}/keywords/{keyword}" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def set_mission_password(self, name: str, password: str, creator_uid: str | None = None) -> tuple[int, Any]:
+        """Sets (or changes) the password of a mission."""
+        path = f"/Marti/api/missions/{name}/password" + _query(password=password, creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("put", url)
+        return s, r
+
+    async def clear_mission_password(self, name: str, creator_uid: str | None = None) -> tuple[int, Any]:
+        """Removes the password from a mission."""
+        path = f"/Marti/api/missions/{name}/password" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def set_uid_keywords(
+        self, name: str, uid: str, keywords: list[str], creator_uid: str | None = None
+    ) -> tuple[int, Any]:
+        """Sets the keywords of a mission content item (identified by its UID)."""
+        path = f"/Marti/api/missions/{name}/uid/{uid}/keywords" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("put", url, headers=headers, json=keywords)
+        return s, r
+
+    async def delete_uid_keywords(self, name: str, uid: str, creator_uid: str | None = None) -> tuple[int, Any]:
+        """Removes the keywords of a mission content item (identified by its UID)."""
+        path = f"/Marti/api/missions/{name}/uid/{uid}/keywords" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def copy_mission(
+        self,
+        name: str,
+        creator_uid: str,
+        copy_name: str,
+        copy_path: str | None = None,
+        default_role: str | None = None,
+        password: str | None = None,
+    ) -> tuple[int, Any]:
+        """Copies a mission to a new mission with the given name."""
+        path = f"/Marti/api/missions/{name}/copy" + _query(
+            creatorUid=creator_uid,
+            copyName=copy_name,
+            copyPath=copy_path,
+            defaultRole=default_role,
+            password=password,
+        )
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("put", url)
+        return s, r
+
+    async def create_mission_feed(
+        self,
+        name: str,
+        creator_uid: str,
+        data_feed_uid: str,
+        filter_polygon: str | None = None,
+        filter_cot_types: str | None = None,
+        filter_callsign: str | None = None,
+    ) -> tuple[int, Any]:
+        """Adds a data feed to a mission."""
+        path = f"/Marti/api/missions/{name}/feed" + _query(
+            creatorUid=creator_uid,
+            dataFeedUid=data_feed_uid,
+            filterPolygon=filter_polygon,
+            filterCotTypes=filter_cot_types,
+            filterCallsign=filter_callsign,
+        )
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("post", url)
+        return s, r
+
+    async def delete_mission_feed(self, name: str, uid: str, creator_uid: str) -> tuple[int, Any]:
+        """Removes a data feed from a mission."""
+        path = f"/Marti/api/missions/{name}/feed/{uid}" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def get_mission_invitations(self, name: str) -> tuple[int, Any]:
+        """Returns the invitations of a mission."""
+        path = f"/Marti/api/missions/{name}/invitations"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_layers(self, name: str) -> tuple[int, Any]:
+        """Returns the layers of a mission."""
+        path = f"/Marti/api/missions/{name}/layers"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def delete_mission_layer(self, name: str, uid: str, creator_uid: str) -> tuple[int, Any]:
+        """Deletes a layer from a mission."""
+        path = f"/Marti/api/missions/{name}/layers" + _query(uid=uid, creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def create_mission_layer(
+        self,
+        name: str,
+        layer_name: str,
+        layer_type: str,
+        uid: str | None = None,
+        parent_uid: str | None = None,
+        after_uid: str | None = None,
+        creator_uid: str | None = None,
+    ) -> tuple[int, Any]:
+        """Creates a layer in a mission.
+
+        layer_type is one of "Cot", "Imagery", "Video", "DataPackage".
+        """
+        path = f"/Marti/api/missions/{name}/layers" + _query(
+            name=layer_name,
+            type=layer_type,
+            uid=uid,
+            parentUid=parent_uid,
+            afterUid=after_uid,
+            creatorUid=creator_uid,
+        )
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("put", url)
+        return s, r
+
+    async def set_mission_layer_parent(
+        self,
+        name: str,
+        layer_uid: str,
+        parent_uid: str | None = None,
+        after_uid: str | None = None,
+        creator_uid: str | None = None,
+    ) -> tuple[int, Any]:
+        """Moves a layer under a parent layer in a mission."""
+        path = f"/Marti/api/missions/{name}/layers/parent" + _query(
+            layerUid=layer_uid, parentUid=parent_uid, afterUid=after_uid, creatorUid=creator_uid
+        )
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("put", url)
+        return s, r
+
+    async def get_mission_layer(self, name: str, layer_uid: str) -> tuple[int, Any]:
+        """Returns a single layer of a mission."""
+        path = f"/Marti/api/missions/{name}/layers/{layer_uid}"
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def rename_mission_layer(self, name: str, layer_uid: str, new_name: str, creator_uid: str) -> tuple[int, Any]:
+        """Renames a layer of a mission."""
+        path = f"/Marti/api/missions/{name}/layers/{layer_uid}/name" + _query(name=new_name, creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("put", url)
+        return s, r
+
+    async def get_mission_log(
+        self,
+        name: str,
+        secago: int | None = None,
+        start: str | None = None,
+        end: str | None = None,
+    ) -> tuple[int, Any]:
+        """Returns the mission log of a mission."""
+        path = f"/Marti/api/missions/{name}/log" + _query(secago=secago, start=start, end=end)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def add_mission_maplayer(self, name: str, creator_uid: str, map_layer: dict[str, Any]) -> tuple[int, Any]:
+        """Adds a map layer to a mission (see the MapLayer schema in the API spec)."""
+        path = f"/Marti/api/missions/{name}/maplayers" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("post", url, headers=headers, json=map_layer)
+        return s, r
+
+    async def update_mission_maplayer(self, name: str, creator_uid: str, map_layer: dict[str, Any]) -> tuple[int, Any]:
+        """Updates a map layer of a mission (see the MapLayer schema in the API spec)."""
+        path = f"/Marti/api/missions/{name}/maplayers" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("put", url, headers=headers, json=map_layer)
+        return s, r
+
+    async def delete_mission_maplayer(self, name: str, uid: str, creator_uid: str) -> tuple[int, Any]:
+        """Deletes a map layer from a mission."""
+        path = f"/Marti/api/missions/{name}/maplayers/{uid}" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def get_mission_token(self, name: str, password: str | None = None) -> tuple[int, Any]:
+        """Returns a bearer token for a mission."""
+        path = f"/Marti/api/missions/{name}/token" + _query(password=password)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def get_mission_subscription(self, name: str, uid: str | None = None) -> tuple[int, Any]:
+        """Returns the subscription of a single UID to a mission."""
+        path = f"/Marti/api/missions/{name}/subscription" + _query(uid=uid)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("get", url)
+        return s, r
+
+    async def delete_mission_subscription(
+        self,
+        name: str,
+        uid: str | None = None,
+        topic: str | None = None,
+        disconnect_only: bool = False,
+    ) -> tuple[int, Any]:
+        """Unsubscribes a UID from a mission, or disconnects only its topics."""
+        path = f"/Marti/api/missions/{name}/subscription" + _query(uid=uid, topic=topic, disconnectOnly=disconnect_only)
+        url = self.server.api_base_url + path
+        s, r = await self.server.connection.request("delete", url)
+        return s, r
+
+    async def create_mission_subscriptions(self, name: str, creator_uid: str, uids: list[str]) -> tuple[int, Any]:
+        """Subscribes multiple UIDs to a mission in one call."""
+        path = f"/Marti/api/missions/{name}/subscription" + _query(creatorUid=creator_uid)
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("post", url, headers=headers, json=uids)
         return s, r

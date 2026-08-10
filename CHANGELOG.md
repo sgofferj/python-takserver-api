@@ -29,6 +29,18 @@ development state is tracked under `[Unreleased]`.
   `/v3/api-docs` endpoint instead of docs.tak.gov.
 - README section documenting the TAK server version the code is tested
   against (5.7-RELEASE-43-HEAD).
+- Mission API completed: all name-based mission endpoints of the live spec
+  are now wrapped in `MissionApi` (58 new methods), covering mission
+  lifecycle (delete/copy/archive/send/expiration/parent), content keywords,
+  external data, invitations, passwords, tokens, layers, map layers, feeds,
+  mission logs, subscriptions (single, bulk, disconnect) and the global
+  endpoints (count, names, paged list, all-invitations/logs/subscriptions,
+  log entries). `get_mission` gained the optional filter parameters of the
+  spec. `ConnectionHelper.request()` now accepts JSON list bodies and `data=`
+  payloads on POST.
+- Live mission CRUD test (`live_tests/test_live_mission.py`): creates and
+  removes its own `live-test-<uuid>` mission; verified against the real
+  server without leaving data behind.
 
 ### Fixed
 
