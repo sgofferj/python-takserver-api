@@ -24,7 +24,9 @@ async def test_create_or_update_file_user() -> None:
             assert json is not None
             assert json["username"] == "op1"
             assert json["password"] == "hunter2"  # pragma: allowlist secret
-            assert "groupList" not in json
+            assert json["groupList"] == []
+            assert json["groupListIN"] == []
+            assert json["groupListOUT"] == []
             return 201, {"username": "op1"}
 
     class MockServer:  # noqa: N801
@@ -223,3 +225,332 @@ async def test_group_exists_false() -> None:
 
     api = UserAccountManagementApi(MockServer())
     assert await api.group_exists("ghost") is False
+
+
+@pytest.mark.asyncio
+async def test_get_users_in_group() -> None:
+    """get_users_in_group hits users-in-group with the group name"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "get"
+            assert url.endswith("/user-management/api/users-in-group/ops")
+            return 200, {"groupname": "ops", "usersInGroupList": ["op1"]}
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, data = await api.get_users_in_group("ops")
+    assert status == 200
+    assert data["groupname"] == "ops"
+
+
+@pytest.mark.asyncio
+async def test_get_groups_for_user() -> None:
+    """get_groups_for_user hits get-groups-for-user with the username"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "get"
+            assert url.endswith("/user-management/api/get-groups-for-user/op1")
+            return 200, {"username": "op1", "groupList": ["admins"]}
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, data = await api.get_groups_for_user("op1")
+    assert status == 200
+    assert data["groupList"] == ["admins"]
+
+
+@pytest.mark.asyncio
+async def test_change_user_password() -> None:
+    """change_user_password sends username + password to change-user-password"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "put"
+            assert url.endswith("/user-management/api/change-user-password")
+            assert json == {
+                "username": "op1",
+                "password": "newpass",  # pragma: allowlist secret
+            }
+            return 200, None
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, _ = await api.change_user_password("op1", "newpass")  # pragma: allowlist secret
+    assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_delete_user() -> None:
+    """delete_user hits delete-user with the username"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "delete"
+            assert url.endswith("/user-management/api/delete-user/op1")
+            return 200, None
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, _ = await api.delete_user("op1")
+    assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_create_file_users_in_bulk() -> None:
+    """create_file_users_in_bulk sends the bulk model to new-users"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "post"
+            assert url.endswith("/user-management/api/new-users")
+            assert json == {
+                "usernameExpression": "bulk-%n",
+                "startN": 1,
+                "endN": 3,
+                "groupList": ["both"],
+                "groupListIN": ["readers"],
+                "groupListOUT": ["writers"],
+            }
+            return 200, [{"username": "bulk-1", "password": "pw1"}]  # pragma: allowlist secret
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, data = await api.create_file_users_in_bulk(
+        username_expression="bulk-%n",
+        start_n=1,
+        end_n=3,
+        group_list=["both"],
+        group_list_in=["readers"],
+        group_list_out=["writers"],
+    )
+    assert status == 200
+    assert data[0]["username"] == "bulk-1"
+
+
+@pytest.mark.asyncio
+async def test_create_file_users_in_bulk_minimal() -> None:
+    """create_file_users_in_bulk without groups sends only the core fields"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert json == {
+                "usernameExpression": "bulk-%n",
+                "startN": 4,
+                "endN": 5,
+                "groupList": [],
+                "groupListIN": [],
+                "groupListOUT": [],
+            }
+            return 200, []
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, data = await api.create_file_users_in_bulk("bulk-%n", 4, 5)
+    assert status == 200
+    assert data == []
+
+
+@pytest.mark.asyncio
+async def test_update_users_for_group() -> None:
+    """update_users_for_group sends the group model to update-group-users"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "put"
+            assert url.endswith("/user-management/api/update-group-users")
+            assert json == {
+                "groupname": "admins",
+                "usersInGroupList": ["op1", "op2"],
+                "usersInGroupListIN": ["op3"],
+                "usersInGroupListOUT": ["op4"],
+            }
+            return 200, None
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, _ = await api.update_users_for_group(
+        groupname="admins",
+        users_in_group_list=["op1", "op2"],
+        users_in_group_list_in=["op3"],
+        users_in_group_list_out=["op4"],
+    )
+    assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_update_users_for_group_minimal() -> None:
+    """update_users_for_group with no lists sends empty lists (server 500s otherwise)"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert json == {
+                "groupname": "admins",
+                "usersInGroupList": [],
+                "usersInGroupListIN": [],
+                "usersInGroupListOUT": [],
+            }
+            return 200, None
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, _ = await api.update_users_for_group("admins")
+    assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_update_groups_for_user() -> None:
+    """update_groups_for_user sends the user model to update-groups"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "put"
+            assert url.endswith("/user-management/api/update-groups")
+            assert json == {
+                "username": "op1",
+                "groupList": ["both"],
+                "groupListIN": ["readers"],
+                "groupListOUT": ["writers"],
+            }
+            return 200, None
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, _ = await api.update_groups_for_user(
+        username="op1",
+        group_list=["both"],
+        group_list_in=["readers"],
+        group_list_out=["writers"],
+    )
+    assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_update_groups_for_user_minimal() -> None:
+    """update_groups_for_user with no lists sends empty lists (server 500s otherwise)"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert json == {
+                "username": "op1",
+                "groupList": [],
+                "groupListIN": [],
+                "groupListOUT": [],
+            }
+            return 200, None
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    status, _ = await api.update_groups_for_user("op1")
+    assert status == 200
