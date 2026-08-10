@@ -58,6 +58,19 @@ development state is tracked under `[Unreleased]`.
   (`GET /Marti/api/ver`) is deliberately NOT wrapped: it returns HTTP 500
   on the reference server (5.7-RELEASE-43-HEAD); see Home-API wiki page.
   Unit-tested (8 new tests) and exercised by live tests (read-only).
+- User Account Management API completed: all 10 operations of the
+  `file-user-account-management-api` tag are now wrapped in
+  `UserAccountManagementApi` - `get_users_in_group()`,
+  `get_groups_for_user()`, `change_user_password()`, `delete_user()`,
+  `create_file_users_in_bulk()` (bulk user generation, `[N]` placeholder in
+  the username expression) and the membership update operations
+  `update_users_for_group()` / `update_groups_for_user()`.
+  `create_or_update_file_user()`, `create_file_users_in_bulk()` and the two
+  update operations now always send all three group-list fields (empty
+  arrays when not given) - the reference server replies with HTTP 500 when
+  any of them is omitted. Unit-tested (10 new tests) and exercised by a
+  live lifecycle test that creates, updates and deletes its own
+  `live-test-<uuid>` users.
 
 ### Fixed
 

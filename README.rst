@@ -34,9 +34,8 @@ Currently covered classes:
      - Complete, incl. helpers
    * - ``UserAccountManagementApi``
      - ``server.user``
-     - 3 of 10 spec operations
-     - Partial - password change, deletion, bulk creation, group
-       membership updates missing
+     - 10 of 10 spec operations
+     - Complete, incl. helpers
 
 Detailed method lists: Home API — ``is_admin()``, ``get_home()``,
 ``get_user_roles()``, helpers ``has_role()``, ``server_version()``.
@@ -45,7 +44,10 @@ Mission API — all name-based mission endpoints of the live spec, plus
 single-keyword content helpers ``delete_content_keyword_by_hash()`` /
 ``delete_content_keyword_by_uid()``.
 User API — ``get_all_users()``, ``get_all_group_names()``,
-``create_or_update_file_user()``, helpers ``user_exists()``,
+``create_or_update_file_user()``, ``get_users_in_group()``,
+``get_groups_for_user()``, ``change_user_password()``, ``delete_user()``,
+``create_file_users_in_bulk()``, ``update_users_for_group()``,
+``update_groups_for_user()``, helpers ``user_exists()``,
 ``group_exists()``.
 
 Endpoints that are proven not to work on the reference server are
