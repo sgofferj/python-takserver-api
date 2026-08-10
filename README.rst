@@ -54,6 +54,11 @@ Endpoints that are proven not to work on the reference server are
 deliberately NOT wrapped (e.g. home-api ``getVer`` / ``GET /Marti/api/ver``
 returns HTTP 500); see the wiki "Not implemented" sections.
 
+The user API wrappers always send all three group-list fields (``groupList``,
+``groupListIN``, ``groupListOUT``) - the reference server answers HTTP 500
+when any is omitted. Groups are implicit: they appear when a user carries
+them and disappear when no user has them. See the wiki for details.
+
 
 Tested TAK server version
 -------------------------
