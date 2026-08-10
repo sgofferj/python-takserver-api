@@ -388,3 +388,185 @@ async def test_create_mission_subscription_full() -> None:
         end="2025-12-31",
     )
     assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_home_api_get_home() -> None:
+    """HomeApi.get_home calls the home endpoint and returns status + data"""
+    from python_takserver_api.tak_home_api import HomeApi
+
+    class MockConnection:  # noqa: N801
+        def __init__(self) -> None:
+            self.requested_url: str | None = None
+
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "get"
+            self.requested_url = url
+            return 200, {"version": "5.7-RELEASE-43-HEAD"}
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = HomeApi(MockServer())
+    status, data = await api.get_home()
+    assert status == 200
+    assert data["version"] == "5.7-RELEASE-43-HEAD"
+    assert api.server.connection.requested_url == "https://tak.example.com:8443/Marti/api/home"
+
+
+@pytest.mark.asyncio
+async def test_home_api_get_user_roles() -> None:
+    """HomeApi.get_user_roles calls the roles endpoint and returns the role list"""
+    from python_takserver_api.tak_home_api import HomeApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "get"
+            assert url == "https://tak.example.com:8443/Marti/api/util/user/roles"
+            return 200, ["ROLE_ADMIN", "ROLE_WEBTAK"]
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = HomeApi(MockServer())
+    status, data = await api.get_user_roles()
+    assert status == 200
+    assert data == ["ROLE_ADMIN", "ROLE_WEBTAK"]
+
+
+@pytest.mark.asyncio
+async def test_home_api_has_role_true() -> None:
+    """HomeApi.has_role returns True when the certificate has the role"""
+    from python_takserver_api.tak_home_api import HomeApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            return 200, ["ROLE_ADMIN", "ROLE_WEBTAK"]
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = HomeApi(MockServer())
+    assert await api.has_role("ROLE_ADMIN") is True
+
+
+@pytest.mark.asyncio
+async def test_home_api_has_role_false() -> None:
+    """HomeApi.has_role returns False when the certificate lacks the role"""
+    from python_takserver_api.tak_home_api import HomeApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            return 200, ["ROLE_WEBTAK"]
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = HomeApi(MockServer())
+    assert await api.has_role("ROLE_ADMIN") is False
+
+
+@pytest.mark.asyncio
+async def test_home_api_has_role_no_roles() -> None:
+    """HomeApi.has_role returns False when the server returns no role list"""
+    from python_takserver_api.tak_home_api import HomeApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            return 500, {"status": "error"}
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = HomeApi(MockServer())
+    assert await api.has_role("ROLE_ADMIN") is False
+
+
+@pytest.mark.asyncio
+async def test_home_api_server_version() -> None:
+    """HomeApi.server_version returns the version string on HTTP 200"""
+    from python_takserver_api.tak_home_api import HomeApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            assert method == "get"
+            assert url == "https://tak.example.com:8443/Marti/api/version"
+            return 200, "5.7-RELEASE-43-HEAD"
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = HomeApi(MockServer())
+    assert await api.server_version() == "5.7-RELEASE-43-HEAD"
+
+
+@pytest.mark.asyncio
+async def test_home_api_server_version_error() -> None:
+    """HomeApi.server_version returns None on a non-200 response"""
+    from python_takserver_api.tak_home_api import HomeApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, Any] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            return 500, {"status": "error"}
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        connection: Any = MockConnection()
+
+    api = HomeApi(MockServer())
+    assert await api.server_version() is None

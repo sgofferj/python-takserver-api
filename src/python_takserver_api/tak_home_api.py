@@ -20,7 +20,6 @@
 from typing import Any
 
 
-# pylint: disable=too-few-public-methods
 class HomeApi:
     """Home API wrapper"""
 
@@ -34,3 +33,40 @@ class HomeApi:
         headers = {"Content-Type": "application/json"}
         _, r = await self.server.connection.request("get", url, headers=headers)
         return bool(r)
+
+    async def get_home(self) -> tuple[int, Any]:
+        """Returns the server's home payload"""
+        path = "/Marti/api/home"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("get", url, headers=headers)
+        return s, r
+
+    async def get_user_roles(self) -> tuple[int, Any]:
+        """Returns the roles of the configured certificate"""
+        path = "/Marti/api/util/user/roles"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("get", url, headers=headers)
+        return s, r
+
+    async def has_role(self, role: str) -> bool:
+        """Check if the configured certificate has a specific role"""
+        _, r = await self.get_user_roles()
+        return bool(r) and role in r
+
+    async def server_version(self) -> str | None:
+        """Return the TAK server version string, or ``None`` if it cannot be determined.
+
+        The spec's home-api ``getVer`` endpoint (``/Marti/api/ver``) returns
+        HTTP 500 on the reference server (5.7-RELEASE-43-HEAD) and is
+        therefore not wrapped; this helper uses the working version-api
+        endpoint ``/Marti/api/version`` instead.
+        """
+        path = "/Marti/api/version"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("get", url, headers=headers)
+        if s == 200:
+            return str(r)
+        return None

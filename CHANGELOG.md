@@ -49,6 +49,15 @@ development state is tracked under `[Unreleased]`.
   keyword already absent -> no-op `200` without a server write. Unit-tested
   (6 tests); live coverage deferred - the test server does not ingest
   mission content via CoT stream or package upload (see AGENTS.md).
+- Home API completed: `get_home()` (`GET /Marti/api/home`) and
+  `get_user_roles()` (`GET /Marti/api/util/user/roles`) wrap the remaining
+  spec endpoints of the home-api tag next to the existing `is_admin()`.
+  Convenience helpers `has_role()` (role membership check on top of
+  `get_user_roles()`) and `server_version()` (version string from the
+  working `GET /Marti/api/version` endpoint). The spec's `getVer`
+  (`GET /Marti/api/ver`) is deliberately NOT wrapped: it returns HTTP 500
+  on the reference server (5.7-RELEASE-43-HEAD); see Home-API wiki page.
+  Unit-tested (8 new tests) and exercised by live tests (read-only).
 
 ### Fixed
 
