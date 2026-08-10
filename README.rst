@@ -13,20 +13,40 @@ API surface
 -----------
 
 The library is organized into a ``Server`` class with sub-api accessors,
-each wrapping one tag of the live OpenAPI spec (``tests/openapispec.json``):
+each wrapping one tag of the live OpenAPI spec (``tests/openapispec.json``).
+Currently covered classes:
 
-- **Home API** (``server.home``) — complete: ``is_admin()``,
-  ``get_home()``, ``get_user_roles()``, plus helpers ``has_role()`` and
-  ``server_version()``
-- **Mission API** (``server.mission``) — complete: all name-based mission
-  endpoints of the live spec (58 methods), plus helpers
-  ``build_mission_package()`` / ``add_mission_package()`` and the
-  single-keyword content helpers ``delete_content_keyword_by_hash()`` /
-  ``delete_content_keyword_by_uid()``
-- **User Account Management API** (``server.user``) — partial: user/group
-  listing and creation, helpers ``user_exists()`` / ``group_exists()``;
-  password change, deletion, bulk creation and group membership updates
-  not yet wrapped
+.. list-table:: Covered API classes
+   :widths: 28 15 20 40
+   :header-rows: 1
+
+   * - Class
+     - Accessor
+     - Coverage
+     - Status
+   * - ``HomeApi``
+     - ``server.home``
+     - 3 of 4 spec operations
+     - Complete, incl. helpers
+   * - ``MissionApi``
+     - ``server.mission``
+     - 69 of 112 spec operations
+     - Complete, incl. helpers
+   * - ``UserAccountManagementApi``
+     - ``server.user``
+     - 3 of 10 spec operations
+     - Partial - password change, deletion, bulk creation, group
+       membership updates missing
+
+Detailed method lists: Home API — ``is_admin()``, ``get_home()``,
+``get_user_roles()``, helpers ``has_role()``, ``server_version()``.
+Mission API — all name-based mission endpoints of the live spec, plus
+``build_mission_package()`` / ``add_mission_package()`` and the
+single-keyword content helpers ``delete_content_keyword_by_hash()`` /
+``delete_content_keyword_by_uid()``.
+User API — ``get_all_users()``, ``get_all_group_names()``,
+``create_or_update_file_user()``, helpers ``user_exists()``,
+``group_exists()``.
 
 Endpoints that are proven not to work on the reference server are
 deliberately NOT wrapped (e.g. home-api ``getVer`` / ``GET /Marti/api/ver``
