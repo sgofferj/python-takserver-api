@@ -2,24 +2,43 @@
 python-takserver-api
 =============================
 
-!!!! READ ME FIRST: Start by going to the "Development" section at end of this document !!!!
+Async Python 3 library wrapping the TAK Server HTTP API. All network I/O uses
+``asyncio`` + ``aiohttp`` with certificate-based mutual TLS authentication.
 
-!!!! FIXME: You MUST edit this file, read it through *with thought* !!!!
-
-!!!! FIXME: Check CI config file, should you change the repo pointer ?? !!!!
-
-!!!! FIXME: Check pyroject.toml: repo pointer, license, authors etc !!!!
+Documentation lives in the project wiki:
+https://github.com/sgofferj/python-takserver-api.wiki
 
 
-Python module for talking to a (tak.gov) tak server
+API surface
+-----------
+
+The library is organized into a ``Server`` class with sub-api accessors,
+each wrapping one tag of the live OpenAPI spec (``tests/openapispec.json``):
+
+- **Home API** (``server.home``) — complete: ``is_admin()``,
+  ``get_home()``, ``get_user_roles()``, plus helpers ``has_role()`` and
+  ``server_version()``
+- **Mission API** (``server.mission``) — complete: all name-based mission
+  endpoints of the live spec (58 methods), plus helpers
+  ``build_mission_package()`` / ``add_mission_package()`` and the
+  single-keyword content helpers ``delete_content_keyword_by_hash()`` /
+  ``delete_content_keyword_by_uid()``
+- **User Account Management API** (``server.user``) — partial: user/group
+  listing and creation, helpers ``user_exists()`` / ``group_exists()``;
+  password change, deletion, bulk creation and group membership updates
+  not yet wrapped
+
+Endpoints that are proven not to work on the reference server are
+deliberately NOT wrapped (e.g. home-api ``getVer`` / ``GET /Marti/api/ver``
+returns HTTP 500); see the wiki "Not implemented" sections.
 
 
 Tested TAK server version
 -------------------------
 
 The current state of this library is tested against a real TAK server running
-**5.7-RELEASE-43-HEAD** (version reported by ``/Marti/api/version``, verified
-2026-08-09).
+**5.7-RELEASE-43-HEAD** (reportable at runtime via
+``await server.home.server_version()``, verified 2026-08-10).
 
 The API specification used as the development baseline is
 ``tests/openapispec.json``, pulled live from the test server's
@@ -99,8 +118,6 @@ the "tox" target in the Dockerfile::
 Production docker
 ^^^^^^^^^^^^^^^^^
 
-!!! FIXME: Remove the repo init from this document after you have done it. !!!
-
 There's a "production" target as well for running the application, remember to change that
 architecture tag to arm64 if building on ARM::
 
@@ -123,36 +140,26 @@ There are a few potential issues however:
 Development
 -----------
 
-!!! FIXME: Remove the repo init from this document after you have done it. !!!
-
 TLDR:
 
-- Create and activate a Python 3.13 virtualenv (assuming virtualenvwrapper)::
+- Create and activate a Python 3.11+ virtualenv (assuming virtualenvwrapper)::
 
     mkvirtualenv -p $(which python3.13) my_virtualenv
-
-- Init your repo (first create it on-line and make note of the remote URI)::
-
-    git init && git add .  # This should have been done automatically by cookiecutter
-    git commit -m 'Cookiecutter stubs'
-    git remote add origin MYREPOURI
-    git branch -m main
-    git push origin main
-
-- change to a branch::
-
-    git checkout -b my_branch
 
 - install Poetry: https://python-poetry.org/docs/#installation
 - Install project deps and pre-commit hooks::
 
     poetry install
-    git add poetry.lock
     pre-commit install --install-hooks
     pre-commit run --all-files
 
 If you get weird errors about missing packages from pre-commit try running it with "poetry run pre-commit".
 
+- Branch workflow: feature work goes on ``feat/<topic>`` branches and is
+  merged into ``main`` (via pull request or direct merge); keep the default
+  branch ``main`` free of direct commits. Wiki doc changes ship on
+  ``docs/<topic>`` branches and must be merged into the wiki's ``master``
+  (the wiki UI only renders ``master``; see AGENTS.md).
 - Ready to go.
 
 Remember to activate your virtualenv whenever working on the repo, this is needed

@@ -61,6 +61,10 @@ development state is tracked under `[Unreleased]`.
 
 ### Fixed
 
+- CI pipeline failed on `main`: the `no-commit-to-branch` pre-commit hook
+  (which protects `main`/`master` from direct local commits) ran in CI and
+  failed main's own runs. CI now skips it (`SKIP: no-commit-to-branch`) -
+  the hook remains active locally.
 - `test_add_mission_package_http_error`: mock asserted the pre-refactor
   base64-JSON payload contract; updated to the raw-ZIP-bytes contract.
 - Removed unused `json` import in `tak_mission_api.py` (pylint W0611).
