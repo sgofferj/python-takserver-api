@@ -141,3 +141,54 @@ async def test_user_api_full_lifecycle(server) -> None:
             status, _ = await server.user.delete_user(username)
             assert status == 200
             assert await server.user.user_exists(username) is False
+
+
+@pytest.mark.asyncio
+async def test_user_api_group_lifecycle(server) -> None:
+    """Create a group implicitly, exercise update_users_for_group, clean up.
+
+    TAK auto-creates a group the moment a user carries it and drops it
+    again once no user has it. This test builds its own dedicated
+    group+users, updates the membership via update_users_for_group, then
+    deletes the users - the group must be gone afterwards (no leftovers).
+    """
+    grp = f"live-test-grp-{uuid.uuid4().hex[:8]}"
+    user1 = f"live-test-{uuid.uuid4().hex[:8]}"
+    user2 = f"live-test-{uuid.uuid4().hex[:8]}"
+    try:
+        # user1 carries the group -> group is auto-created
+        status, _ = await server.user.create_or_update_file_user(
+            username=user1, password="Live-Test-Pw-9!", group_list_both=[grp]  # pragma: allowlist secret
+        )
+        assert status == 200 or status == 201
+        _, groups = await server.user.get_all_group_names()
+        assert grp in [g["groupname"] for g in groups]
+        status, data = await server.user.get_users_in_group(grp)
+        assert status == 200
+        assert data["usersInGroupList"] == [user1]
+
+        # second user joins the group via update_users_for_group
+        status, _ = await server.user.create_or_update_file_user(
+            username=user2, password="Live-Test-Pw-8!"  # pragma: allowlist secret
+        )
+        assert status == 200 or status == 201
+        status, _ = await server.user.update_users_for_group(grp, users_in_group_list=[user1, user2])
+        assert status == 200
+        status, data = await server.user.get_users_in_group(grp)
+        assert status == 200
+        assert sorted(data["usersInGroupList"]) == sorted([user1, user2])
+
+        # remove user2 again
+        status, _ = await server.user.update_users_for_group(grp, users_in_group_list=[user1])
+        assert status == 200
+        status, data = await server.user.get_users_in_group(grp)
+        assert status == 200
+        assert data["usersInGroupList"] == [user1]
+    finally:
+        for u in (user1, user2):
+            if await server.user.user_exists(u):
+                status, _ = await server.user.delete_user(u)
+                assert status == 200
+        # no user carries the group anymore -> it must be gone
+        _, groups = await server.user.get_all_group_names()
+        assert grp not in [g["groupname"] for g in groups]

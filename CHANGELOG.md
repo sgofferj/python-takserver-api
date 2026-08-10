@@ -68,9 +68,10 @@ development state is tracked under `[Unreleased]`.
   `create_or_update_file_user()`, `create_file_users_in_bulk()` and the two
   update operations now always send all three group-list fields (empty
   arrays when not given) - the reference server replies with HTTP 500 when
-  any of them is omitted. Unit-tested (10 new tests) and exercised by a
-  live lifecycle test that creates, updates and deletes its own
-  `live-test-<uuid>` users.
+  any of them is omitted. Unit-tested (10 new tests) and exercised by two
+  live tests that create, update and delete their own `live-test-<uuid>`
+  users and groups (groups are auto-created from user memberships and
+  auto-deleted when no user has them).
 
 ### Fixed
 
