@@ -7,7 +7,7 @@ from typing import Any, NamedTuple
 
 import pytest
 
-from python_takserver_api.tak_mission_api import _query, build_mission_package
+from python_takserver_api.tak_mission_api import MissionApi, _query, build_mission_package
 
 
 class MockConnection:  # noqa: N801
@@ -1136,3 +1136,125 @@ async def test_connection_helper_request_post_data() -> None:
     status, data = await helper.request("post", "http://example.com/api", data="raw body")
     assert status == 201
     assert data == "Created"
+
+
+def _mission_envelope(contents: list[dict[str, Any]]) -> dict[str, Any]:
+    """TAK 5.x Mission envelope wrapping a single mission object."""
+    return {
+        "version": 3,
+        "type": "Mission",
+        "data": [{"name": "alpha", "contents": contents}],
+        "nodeId": "node-1",
+    }
+
+
+class ScriptedMockConnection:  # noqa: N801
+    """Recording connection mock returning canned responses in order."""
+
+    def __init__(self, responses: list[tuple[int, Any]]) -> None:
+        self.responses = responses
+        self.calls: list[tuple[str, str, dict[str, Any] | None, Any, Any]] = []
+
+    async def request(
+        self,
+        method: str,
+        url: str,
+        headers: dict[str, Any] | None = None,
+        json: dict[str, Any] | list[Any] | None = None,
+        data: str | None = None,
+    ) -> tuple[int, Any]:
+        self.calls.append((method, url, headers, json, data))
+        return self.responses.pop(0)
+
+
+def _make_scripted_api(responses: list[tuple[int, Any]]) -> tuple[MissionApi, ScriptedMockConnection]:
+    server = MockServer()
+    conn = ScriptedMockConnection(responses)
+    server.connection = conn
+    return MissionApi(server), conn
+
+
+@pytest.mark.asyncio
+async def test_delete_content_keyword_by_hash_removes_keyword() -> None:
+    """delete_content_keyword_by_hash reads the list and writes it back reduced"""
+    envelope = _mission_envelope([{"hash": "h1", "uid": "u1", "keywords": ["a", "b"], "name": "doc.txt"}])
+    api, conn = _make_scripted_api([(200, envelope), (200, {"ok": True})])
+
+    status, data = await api.delete_content_keyword_by_hash("alpha", "h1", "a")
+
+    assert status == 200
+    assert data == {"ok": True}
+    assert len(conn.calls) == 2
+    method, url, headers, json_body, _ = conn.calls[0]
+    assert (method, url) == (
+        "get",
+        "https://tak.example.com:8443/Marti/api/missions/alpha?changes=false&logs=false",
+    )
+    method, url, headers, json_body, _ = conn.calls[1]
+    assert method == "put"
+    assert url == "https://tak.example.com:8443/Marti/api/missions/alpha/content/h1/keywords"
+    assert headers == {"Content-Type": "application/json"}
+    assert json_body == ["b"]
+
+
+@pytest.mark.asyncio
+async def test_delete_content_keyword_by_uid_removes_keyword() -> None:
+    """delete_content_keyword_by_uid writes back through the uid endpoint"""
+    envelope = _mission_envelope([{"hash": "h1", "uid": "u1", "keywords": ["a", "b", "c"]}])
+    api, conn = _make_scripted_api([(200, envelope), (200, {"ok": True})])
+
+    status, data = await api.delete_content_keyword_by_uid("alpha", "u1", "b")
+
+    assert status == 200
+    method, url, headers, json_body, _ = conn.calls[1]
+    assert url == "https://tak.example.com:8443/Marti/api/missions/alpha/uid/u1/keywords"
+    assert json_body == ["a", "c"]
+
+
+@pytest.mark.asyncio
+async def test_delete_content_keyword_absent_is_noop() -> None:
+    """Deleting a keyword that is not present returns the list, no write"""
+    envelope = _mission_envelope([{"hash": "h1", "uid": "u1", "keywords": ["a", "b"]}])
+    api, conn = _make_scripted_api([(200, envelope)])
+
+    status, data = await api.delete_content_keyword_by_hash("alpha", "h1", "zzz")
+
+    assert status == 200
+    assert data == ["a", "b"]
+    assert len(conn.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_delete_content_keyword_content_missing_returns_404() -> None:
+    """A content hash that is not in the mission yields a 404 and no write"""
+    envelope = _mission_envelope([{"hash": "h1", "uid": "u1", "keywords": ["a"]}])
+    api, conn = _make_scripted_api([(200, envelope)])
+
+    status, data = await api.delete_content_keyword_by_uid("alpha", "nope", "a")
+
+    assert status == 404
+    assert "not found" in str(data)
+    assert len(conn.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_delete_content_keyword_mission_error_passthrough() -> None:
+    """A failing mission fetch is returned unchanged, no write attempted"""
+    api, conn = _make_scripted_api([(500, "boom")])
+
+    status, data = await api.delete_content_keyword_by_hash("alpha", "h1", "a")
+
+    assert (status, data) == (500, "boom")
+    assert len(conn.calls) == 1
+
+
+@pytest.mark.asyncio
+async def test_delete_content_keyword_works_with_unwrapped_mission() -> None:
+    """A bare mission object (no envelope) is handled the same way"""
+    bare_mission = {"name": "alpha", "contents": [{"hash": "h1", "keywords": ["x", "y"]}]}
+    api, conn = _make_scripted_api([(200, bare_mission), (200, {"ok": True})])
+
+    status, data = await api.delete_content_keyword_by_hash("alpha", "h1", "x")
+
+    assert status == 200
+    assert conn.calls[1][3] == ["y"]

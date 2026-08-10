@@ -41,6 +41,14 @@ development state is tracked under `[Unreleased]`.
 - Live mission CRUD test (`live_tests/test_live_mission.py`): creates and
   removes its own `live-test-<uuid>` mission; verified against the real
   server without leaving data behind.
+- Convenience helpers `delete_content_keyword_by_hash()` and
+  `delete_content_keyword_by_uid()`: remove a single keyword from a mission
+  content item (by hash or UID) by reading the current keyword list,
+  dropping the keyword and writing the reduced list back, since the TAK API
+  only supports setting or clearing the whole list. Not found -> `404`,
+  keyword already absent -> no-op `200` without a server write. Unit-tested
+  (6 tests); live coverage deferred - the test server does not ingest
+  mission content via CoT stream or package upload (see AGENTS.md).
 
 ### Fixed
 
