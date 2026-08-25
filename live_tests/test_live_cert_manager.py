@@ -77,14 +77,65 @@ async def test_download_certificate(server) -> None:
 
 
 @pytest.mark.asyncio
-async def test_revoke_and_delete_negative_paths(server) -> None:
-    """Revoke/delete answer an error for a bogus hash - and touch nothing.
+async def test_revoke_and_delete_own_old_certificates(server) -> None:
+    """Full revoke -> verify -> delete cycle on the caller's OWN old certs.
 
-    The success path cannot be live-tested safely: certificates only land
-    in the certadmin registry via the enrollment API, which requires LDAP
-    credentials we must not (and do not) handle in tests. CA-minted
-    makeCert.sh certificates are never registered there.
+    Authorized scope: certificates issued to the admin identity itself
+    that were issued more than seven days ago are safe to revoke and
+    delete - they are superseded by newer re-enrollments.
+
+    Identifier quirk (verified live 2026-08-25): the {ids} path parameter
+    of revoke/delete takes the server-side NUMERIC certificate ids (`id`
+    field), not the hashes - hashes yield an HTML 500. The singular
+    DELETE /cert/{hash} answers 200 but does not remove anything; the
+    batch endpoint with numeric ids is the one that works.
     """
+    from datetime import datetime, timedelta, timezone
+
+    status, certs = await server.certs.get_certificates(username="sgofferj")
+    assert status == 200
+    cutoff = datetime.now(timezone.utc) - timedelta(days=7)
+
+    def _issued(cert: dict) -> datetime:
+        raw = (cert.get("issuanceDate") or "").replace("Z", "+00:00")
+        return datetime.fromisoformat(raw)
+
+    candidates = sorted(
+        (c for c in certs if c.get("issuanceDate") and _issued(c) < cutoff and not c.get("revocationDate")),
+        key=_issued,
+    )
+    if len(candidates) < 2:
+        pytest.skip("fewer than two week-old unrevoked certificates available")
+
+    victim1, victim2 = candidates[0], candidates[1]
+    ids = [victim1["id"], victim2["id"]]
+    hashes = {victim1["hash"], victim2["hash"]}
+
+    # revoke both by numeric id
+    status, _ = await server.certs.revoke_certificates(ids)
+    assert status == 200
+
+    # verify: records now carry a revocation date and appear revoked
+    _, r1 = await server.certs.get_certificate(victim1["hash"])
+    _, r2 = await server.certs.get_certificate(victim2["hash"])
+    assert r1.get("revocationDate") and r2.get("revocationDate")
+    _, revoked = await server.certs.get_revoked_certificates()
+    revoked_hashes = {c["hash"] for c in revoked}
+    assert hashes <= revoked_hashes
+
+    # delete both via the batch endpoint (numeric ids!)
+    status, _ = await server.certs.delete_certificates(ids)
+    assert status == 200
+
+    # verify they are gone from the username-filtered listing
+    _, remaining = await server.certs.get_certificates(username="sgofferj")
+    remaining_hashes = {c["hash"] for c in remaining}
+    assert hashes.isdisjoint(remaining_hashes)
+
+
+@pytest.mark.asyncio
+async def test_revoke_and_delete_negative_paths(server) -> None:
+    """Bogus hashes answer an error - and touch nothing."""
     status, _ = await server.certs.revoke_certificates("00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF")
     assert status >= 400
     status, _ = await server.certs.delete_certificate("00:11:22:33:44:55:66:77:88:99:AA:BB:CC:DD:EE:FF")

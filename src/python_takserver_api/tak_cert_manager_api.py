@@ -48,11 +48,11 @@ class CertManagerApi:
         return unwrap_api_response(payload)
 
     @staticmethod
-    def _join_ids(ids: str | list[str]) -> str:
-        """Joins one or more certificate hash ids into a path segment"""
+    def _join_ids(ids: str | list[Any]) -> str:
+        """Joins one or more certificate ids into a path segment"""
         if isinstance(ids, str):
             return ids
-        return ",".join(ids)
+        return ",".join(str(i) for i in ids)
 
     async def get_certificates(self, username: str | None = None) -> tuple[int, Any]:
         """Returns all certificates known to the server.
@@ -125,8 +125,10 @@ class CertManagerApi:
     async def delete_certificate(self, hash_id: str) -> tuple[int, Any]:
         """Deletes a single certificate record by its hash id.
 
-        This removes the record from the server's certificate management -
-        prefer `revoke_certificates()` unless you really mean delete.
+        > **SERVER BUG (verified live 2026-08-25):** this call answers
+        > HTTP 200 but does NOT actually remove the record. Use
+        > `delete_certificates([cert_id])` instead - the batch endpoint
+        > with the NUMERIC certificate id works.
         """
         path = f"/Marti/api/certadmin/cert/{hash_id}"
         url = self.server.api_base_url + path
@@ -135,7 +137,13 @@ class CertManagerApi:
         return s, self._unwrap(r)
 
     async def delete_certificates(self, ids: str | list[str]) -> tuple[int, Any]:
-        """Deletes several certificate records given as hash list"""
+        """Deletes several certificate records.
+
+        `ids` are the server-side NUMERIC certificate ids (`id` field of
+        `get_certificates()` entries) - NOT the hashes. Verified live:
+        batch deletion by numeric id removes the records, while the
+        singular `delete_certificate(hash)` silently does nothing.
+        """
         path = f"/Marti/api/certadmin/cert/delete/{self._join_ids(ids)}"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
@@ -143,7 +151,13 @@ class CertManagerApi:
         return s, self._unwrap(r)
 
     async def revoke_certificates(self, ids: str | list[str]) -> tuple[int, Any]:
-        """Revokes several certificates given as hash list"""
+        """Revokes certificates.
+
+        `ids` are the server-side NUMERIC certificate ids (`id` field of
+        `get_certificates()` entries) - NOT the hashes. Passing hashes
+        results in an HTML error page with HTTP 500. After revocation,
+        the affected records carry a `revocationDate`.
+        """
         path = f"/Marti/api/certadmin/cert/revoke/{self._join_ids(ids)}"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
