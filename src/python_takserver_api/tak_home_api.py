@@ -34,6 +34,20 @@ class HomeApi:
         _, r = await self.server.connection.request("get", url, headers=headers)
         return bool(r)
 
+    async def is_ldap_admin(self) -> bool:
+        """Check if the configured certificate has LDAP admin rights.
+
+        New in TAK Server 5.8 - on 5.7 the endpoint does not exist
+        (HTTP 404).
+        """
+        path = "/Marti/api/util/isLdapAdmin"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("get", url, headers=headers)
+        if s == 200:
+            return bool(r)
+        return False
+
     async def get_home(self) -> tuple[int, Any]:
         """Returns the server's home payload"""
         path = "/Marti/api/home"

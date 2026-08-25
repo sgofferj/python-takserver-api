@@ -192,3 +192,37 @@ async def test_user_api_group_lifecycle(server) -> None:
         # no user carries the group anymore -> it must be gone
         _, groups = await server.user.get_all_group_names()
         assert grp not in [g["groupname"] for g in groups]
+
+
+@pytest.mark.asyncio
+async def test_um_prefix_detection_on_live_server(server) -> None:
+    """The detected user-management prefix matches the running server."""
+    version = await server.home.server_version()
+    prefix = await server.user._base()  # noqa: SLF001
+    if version and version.startswith("5.8"):
+        assert prefix == "/Marti/api/user-management/api"
+    else:
+        assert prefix == "/user-management/api"
+        # and the legacy paths still work on this server
+        status, _ = await server.user.get_all_users()
+        assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_is_ldap_admin_guard(server) -> None:
+    """isLdapAdmin is new in 5.8; on this 5.7 server it answers 404.
+
+    The wrapper returns False in that case. When the server is upgraded,
+    this test starts failing - which is the signal to verify real
+    behaviour.
+    """
+    version = await server.home.server_version()
+    result = await server.home.is_ldap_admin()
+    if version and not version.startswith("5.8"):
+        # endpoint must not exist pre-5.8
+        status, _ = await server.connection.request(
+            "get",
+            f"{server.api_base_url}/Marti/api/util/isLdapAdmin",
+            headers={"Content-Type": "application/json"},
+        )
+        assert status == 404

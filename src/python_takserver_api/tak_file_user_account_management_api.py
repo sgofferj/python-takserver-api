@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# tak_file_user_account_management_api.py from https://github.com/sgofferj/takserver-api-python
+# tak_file_user_account_management_api.py from https://github.com/sgofferj/python-takserver-api
 #
 # Copyright Stefan Gofferje
 #
@@ -13,12 +13,41 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either expressed or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
 
-"""file-user-account-management-api - https://docs.tak.gov/api/takserver#tag/file-user-account-management-api"""
+"""file-user-account-management-api
 
+Manages file-based user accounts and groups. All operations are
+version-aware: on TAK Server 5.7 the endpoints live under
+``/user-management/api``, on 5.8+ they moved to
+``/Marti/api/user-management/api``. The base path is detected from the
+server's version string on first use (and cached); it can also be forced
+by setting ``user_management_base`` on the ``Server`` instance before
+first use.
+"""
+
+import re
 from typing import Any
+
+PREFIX_LEGACY = "/user-management/api"
+PREFIX_MARTI = "/Marti/api/user-management/api"
+
+
+def um_prefix_for_version(version: str | None) -> str:
+    """Returns the user-management base path for a TAK version string.
+
+    TAK Server 5.8 relocated the user-management endpoints from
+    ``/user-management/api`` to ``/Marti/api/user-management/api``.
+    Anything undetectable falls back to the legacy prefix.
+    """
+    if not version:
+        return PREFIX_LEGACY
+    match = re.match(r"^v?(\d+)\.(\d+)", version.strip())
+    if match:
+        major, minor = int(match.group(1)), int(match.group(2))
+        if major > 5 or (major == 5 and minor >= 8):
+            return PREFIX_MARTI
+    return PREFIX_LEGACY
 
 
 class UserAccountManagementApi:
@@ -26,6 +55,19 @@ class UserAccountManagementApi:
 
     def __init__(self, server: Any) -> None:
         self.server = server
+        # explicit override wins; otherwise detect once, lazily
+        self._prefix: str | None = getattr(server, "user_management_base", None)
+
+    async def _base(self) -> str:
+        """Resolves (and caches) the user-management base path"""
+        if self._prefix is None:
+            s, r = await self.server.connection.request(
+                "get",
+                f"{self.server.api_base_url}/Marti/api/version",
+                headers={"Content-Type": "application/json"},
+            )
+            self._prefix = um_prefix_for_version(str(r) if s == 200 else None)
+        return self._prefix
 
     # pylint: disable=too-many-arguments, too-many-positional-arguments
     async def create_or_update_file_user(
@@ -36,12 +78,16 @@ class UserAccountManagementApi:
         group_list_in: list[str] | None = None,
         group_list_out: list[str] | None = None,
     ) -> tuple[int, Any]:
-        """Create or update a user on the server
+        """Create or update a user on the server.
 
         The three group lists are always sent - the server replies with
         HTTP 500 when they are omitted.
+
+        Note: on 5.7, creating a user with a group in `groupList` did not
+        reliably persist the membership; assigning groups afterwards via
+        `update_groups_for_user()` proved dependable.
         """
-        path = "/user-management/api/new-user"
+        path = f"{await self._base()}/new-user"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         data: dict[str, Any] = {
@@ -56,7 +102,7 @@ class UserAccountManagementApi:
 
     async def get_all_users(self) -> tuple[int, Any]:
         """Returns a list of all users on the server"""
-        path = "/user-management/api/list-users"
+        path = f"{await self._base()}/list-users"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("get", url, headers=headers)
@@ -64,7 +110,7 @@ class UserAccountManagementApi:
 
     async def get_all_group_names(self) -> tuple[int, Any]:
         """Returns a list of all groups on the server"""
-        path = "/user-management/api/list-groupnames"
+        path = f"{await self._base()}/list-groupnames"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("get", url, headers=headers)
@@ -83,33 +129,37 @@ class UserAccountManagementApi:
         return bool(g)
 
     async def get_users_in_group(self, group: str) -> tuple[int, Any]:
-        """Returns the users in a group (SimpleGroupWithUsersModel)"""
-        path = f"/user-management/api/users-in-group/{group}"
+        """Returns a group record with its member list"""
+        path = f"{await self._base()}/users-in-group/{group}"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("get", url, headers=headers)
         return s, r
 
     async def get_groups_for_user(self, username: str) -> tuple[int, Any]:
-        """Returns the groups a user belongs to (SimpleUserGroupModel)"""
-        path = f"/user-management/api/get-groups-for-user/{username}"
+        """Returns the group entitlements of a user (UserManagement model).
+
+        For channel subscriptions see
+        `tak_group_api.GroupApi.get_groups_for_user()` instead.
+        """
+        path = f"{await self._base()}/get-groups-for-user/{username}"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("get", url, headers=headers)
         return s, r
 
     async def change_user_password(self, username: str, password: str) -> tuple[int, Any]:
-        """Change a user's password"""
-        path = "/user-management/api/change-user-password"
+        """Changes a user's password"""
+        path = f"{await self._base()}/change-user-password"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
-        data: dict[str, Any] = {"username": username, "password": password}
+        data = {"username": username, "password": password}
         s, r = await self.server.connection.request("put", url, headers=headers, json=data)
         return s, r
 
     async def delete_user(self, username: str) -> tuple[int, Any]:
-        """Delete a user from the server"""
-        path = f"/user-management/api/delete-user/{username}"
+        """Deletes a user account"""
+        path = f"{await self._base()}/delete-user/{username}"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("delete", url, headers=headers)
@@ -134,7 +184,7 @@ class UserAccountManagementApi:
         rejects requests without ``group_list`` (HTTP 400).
         Returns a list of UserPasswordModel with the generated passwords.
         """
-        path = "/user-management/api/new-users"
+        path = f"{await self._base()}/new-users"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         data: dict[str, Any] = {
@@ -160,7 +210,7 @@ class UserAccountManagementApi:
         The three user lists are always sent - the server replies with
         HTTP 500 when any of them is omitted.
         """
-        path = "/user-management/api/update-group-users"
+        path = f"{await self._base()}/update-group-users"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         data: dict[str, Any] = {
@@ -184,7 +234,7 @@ class UserAccountManagementApi:
         The three group lists are always sent - the server replies with
         HTTP 500 when any of them is omitted.
         """
-        path = "/user-management/api/update-groups"
+        path = f"{await self._base()}/update-groups"
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         data: dict[str, Any] = {
