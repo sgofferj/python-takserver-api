@@ -54,3 +54,13 @@ async def server() -> Server:
     srv = Server(host, cert, key)
     yield srv
     await srv.close()
+
+
+@pytest.fixture
+def live_host() -> str:
+    """The bare hostname of the live TAK server (no scheme/port)."""
+    dotenv = _load_dotenv(DOTENV)
+    host = _get("TAK_LIVE_HOST", dotenv)
+    if not host:
+        pytest.skip("live server not configured")
+    return host

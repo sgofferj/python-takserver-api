@@ -13,6 +13,19 @@ development state is tracked under `[Unreleased]`.
 
 ### Added
 
+- Group API (`GroupApi`, `server.groups`): complete wrapper for the
+  `groups-api` tag - `get_all_groups()`, `get_groups_for_user()`,
+  `get_group()`, `set_active_groups()` (absolute semantics, optional
+  `clientUid`), `set_active_groups_bits()`, `set_active_groups_force()`,
+  `wait_for_group_update()`, `get_group_cache_enabled()`,
+  `get_ldap_groups()`, `get_ldap_group_members()`. ApiResponse envelopes
+  are unwrapped automatically. Helpers: `get_active_groups()`,
+  `subscribe()` / `subscribe_many()`, `unsubscribe()` /
+  `unsubscribe_many()`, `is_subscribed()`, `get_channels()`,
+  `channel_exists()`, `wait_for_group_update_until()`. `Server` gained an
+  optional `username=` argument (certificate CN) for APIs that address the
+  authenticated user by name. Unit-tested (26 tests) and live-tested
+  against tak.gofferje.net with a self-provisioned throwaway user/cert.
 - Live integration tests in `live_tests/`, marked `live` and excluded from
   unit runs (`pytest live_tests/ -m live`, or `tox -e live`). They run only on
   the developer machine against the real TAK server and never in CI.
