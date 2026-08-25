@@ -11,6 +11,20 @@ development state is tracked under `[Unreleased]`.
 
 ## [Unreleased]
 
+### Changed
+
+- User Account Management API is now version-aware: TAK Server 5.8
+  relocated the endpoints from `/user-management/api` to
+  `/Marti/api/user-management/api`. The base path is detected from the
+  server's version string on first use and cached; it can be forced by
+  setting `user_management_base` on the `Server` instance. Detection and
+  fallback covered by unit tests, verified live on 5.7.
+
+### Added
+
+- `HomeApi.is_ldap_admin()`: wraps the new-in-5.8
+  `GET /Marti/api/util/isLdapAdmin`; returns `False` on servers where
+  the endpoint does not exist (live-guarded).
 ### Added
 
 - Submission API (`SubmissionApi`, `server.submission`): complete wrapper
