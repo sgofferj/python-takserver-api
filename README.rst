@@ -30,7 +30,7 @@ Currently covered classes:
      - Complete, incl. helpers
    * - ``MissionApi``
      - ``server.mission``
-     - 69 of 112 spec operations
+     - 112 of 112 spec operations
      - Complete, incl. helpers
    * - ``UserAccountManagementApi``
      - ``server.user``
