@@ -24,6 +24,7 @@ from .tak_home_api import HomeApi
 from .tak_file_user_account_management_api import UserAccountManagementApi
 from .tak_group_api import GroupApi
 from .tak_data_feed_api import DataFeedApi
+from .tak_cert_manager_api import CertManagerApi
 from .tak_mission_api import MissionApi
 
 
@@ -49,6 +50,7 @@ class Server:
         self.user = UserAccountManagementApi(self)
         self.groups = GroupApi(self)
         self.datafeeds = DataFeedApi(self)
+        self.certs = CertManagerApi(self)
         self.mission = MissionApi(self)
 
     async def close(self) -> None:

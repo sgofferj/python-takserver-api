@@ -248,6 +248,41 @@ async def test_get_channels_view(group_env) -> None:
 
 
 @pytest.mark.asyncio
+async def test_rmw_helpers_via_admin_username(group_env) -> None:
+    """subscribe/unsubscribe/is_subscribed/get_active_groups with username=.
+
+    The RMW helpers need a readable subscription view for their target.
+    Self-views of REST-only clients are empty (see scope notes), but
+    views queried for ANOTHER user return persisted truth instantly -
+    so the admin connection drives the helpers on behalf of the
+    throwaway user.
+    """
+    env = group_env
+    adsb, family = env.stable_channels
+
+    # nothing subscribed yet
+    assert await env.admin.groups.get_active_groups(env.username) == []
+    assert await env.admin.groups.is_subscribed(adsb, username=env.username) is False
+
+    status, _ = await env.user.groups.subscribe(adsb, directions=["OUT"], username=env.username)
+    assert status == 200
+    active = await env.admin.groups.get_active_groups(env.username)
+    assert [g["name"] for g in active] == [adsb]
+    assert await env.admin.groups.is_subscribed(adsb, direction="OUT", username=env.username) is True
+
+    status, _ = await env.user.groups.unsubscribe(adsb, directions=["OUT"], username=env.username)
+    assert status == 200
+    assert await env.admin.groups.is_subscribed(adsb, username=env.username) is False
+
+
+@pytest.mark.asyncio
+async def test_get_ldap_group_members_readonly(server) -> None:
+    """The member-count endpoint answers for an existing group."""
+    status, count = await server.groups.get_ldap_group_members(["WOLF_ADSB"])
+    assert status == 200
+
+
+@pytest.mark.asyncio
 async def test_wait_for_group_update_on_admin_change(group_env) -> None:
     """The long-poll fires when an admin force-changes the user's groups.
 
