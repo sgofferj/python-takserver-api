@@ -48,6 +48,10 @@ Currently covered classes:
      - ``server.certs``
      - 10 of 15 spec operations
      - Complete; 5 ops broken server-side, not wrapped
+   * - ``SubmissionApi``
+     - ``server.submission``
+     - 15 of 15 spec operations
+     - Complete; creation ops broken server-side, guarded
 
 **Home API** — ``server.home``
 
@@ -100,6 +104,18 @@ Currently covered classes:
   ``delete_certificate()``
 * The user-side TLS enrollment endpoints are not wrapped (server answers
   403 even to admins); see the Cert-Manager-API wiki page.
+
+**Submission API** — ``server.submission`` *(input & messaging config)*
+
+* Inputs: ``get_input_metrics()`` · ``get_input_metric()`` ·
+  ``create_input()`` · ``modify_input()`` · ``delete_input()``
+* Streaming feeds by name: ``create_data_feed()`` ·
+  ``get_data_feed()`` · ``modify_data_feed()`` · ``delete_data_feed()``
+* Config & features: ``get_config_info()`` · ``modify_config_info()`` ·
+  ``is_store_forward_chat_enabled()`` · ``enable/disable_store_forward_chat()``
+* Counters: ``get_database_cot_counts()``
+* Creating inputs/named feeds is broken server-side (HTTP 400, NPE in
+  validation); see the Submission-API wiki page.
 
 **Mission API** — ``server.mission``
 
