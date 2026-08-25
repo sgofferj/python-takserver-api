@@ -26,6 +26,7 @@ from .tak_group_api import GroupApi
 from .tak_data_feed_api import DataFeedApi
 from .tak_cert_manager_api import CertManagerApi
 from .tak_submission_api import SubmissionApi
+from .tak_subscription_api import SubscriptionApi
 from .tak_mission_api import MissionApi
 
 
@@ -53,6 +54,7 @@ class Server:
         self.datafeeds = DataFeedApi(self)
         self.certs = CertManagerApi(self)
         self.submission = SubmissionApi(self)
+        self.subscriptions = SubscriptionApi(self)
         self.mission = MissionApi(self)
 
     async def close(self) -> None:
