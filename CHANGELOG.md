@@ -19,24 +19,42 @@ development state is tracked under `[Unreleased]`.
   server's version string on first use and cached; it can be forced by
   setting `user_management_base` on the `Server` instance. Detection and
   fallback covered by unit tests, verified live on 5.7.
+- Documentation: IN/OUT group direction semantics clarified everywhere -
+  they are from the **group's** point of view (`groupListIN` = groups a
+  user may send into, `groupListOUT` = groups whose traffic they
+  receive); fixed reversed examples and added explicit explanations to
+  docstrings, README and wiki.
+- README: per-API method overview restructured from prose into grouped
+  bullet lists (catalog / mutations / helpers).
 
 ### Added
 
+- Subscription API (`SubscriptionApi`, `server.subscriptions`): client
+  subscription registry (`get_all_subscriptions()`,
+  `get_subscription()`), static subscriptions
+  (`add_static_subscription()`, `delete_subscription()`), incognito
+  toggle, per-client CoT filters (`set_filter()`, `delete_filter()`)
+  and the bulk group-change trigger (`bulk_groups_updated()`).
+  Live-verified quirks, pinned by guard assertions: `toggle_incognito()`
+  answers 200 without changing the flag; clients only register after a
+  proper CoT contact announcement; transient empty-UID entries exist in
+  the registry. 8 unit tests; 4 live tests including a self-connected
+  throwaway client exercising the full registry/filter cycle.
 - `HomeApi.is_ldap_admin()`: wraps the new-in-5.8
   `GET /Marti/api/util/isLdapAdmin`; returns `False` on servers where
   the endpoint does not exist (live-guarded).
-### Added
-
 - Submission API (`SubmissionApi`, `server.submission`): complete wrapper
   for the `submission-api` tag - input metrics (`get_input_metrics()`,
   `get_input_metric()`), named streaming data-feed registry
   (`create_data_feed()`, `get_data_feed()`, `modify_data_feed()`,
   `delete_data_feed()`), messaging configuration
   (`get_config_info()`, `modify_config_info()`), store-and-forward chat
-  toggles and database CoT counters. Live-verified server bugs: creating
-  new inputs or named data feeds fails with HTTP 400 regardless of body
-  (server-side NPE during validation); wrapped anyway with guard tests.
-  9 unit tests; 7 live tests including a state-restoring S&F-chat toggle.
+  toggles and database CoT counters. Live-verified server bugs:
+  modifying freshly created inputs is rejected (HTTP 400) and creating
+  named data feeds fails with an empty HTTP 500 regardless of body;
+  wrapped anyway with guard tests. Full input CRUD verified live on a
+  dedicated port. 9 unit tests; 7 live tests including a
+  state-restoring S&F-chat toggle.
 - Certificate Manager API (`CertManagerApi`, `server.certs`): complete
   wrapper for the `cert-manager-admin-api` tag - `get_certificates()`
   (with optional username filter), `get_active_certificates()`,
