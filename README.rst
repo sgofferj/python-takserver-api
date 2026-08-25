@@ -40,6 +40,10 @@ Currently covered classes:
      - ``server.groups``
      - 10 of 10 spec operations
      - Complete, incl. helpers
+   * - ``DataFeedApi``
+     - ``server.datafeeds``
+     - 11 of 11 spec operations
+     - Complete, incl. helpers
 
 Detailed method lists: Home API — ``is_admin()``, ``get_home()``,
 ``get_user_roles()``, helpers ``has_role()``, ``server_version()``.
@@ -56,6 +60,10 @@ Note: subscription helpers need the caller's username — pass
 ``Server(..., username=...)`` (the certificate CN) or give an explicit
 ``username=`` argument. See the Groups-API wiki page for scope notes
 (entitlements vs. available channels vs. active subscriptions).
+Data Feed API — predicate feed CRUD plus catalog/bounds queries,
+statistics and content access; ``build_predicate_feed()`` builds a safe
+feed body (see the Data-Feeds-API wiki page for the filter-groups
+access-lockout trap).
 User API — ``get_all_users()``, ``get_all_group_names()``,
 ``create_or_update_file_user()``, ``get_users_in_group()``,
 ``get_groups_for_user()``, ``change_user_password()``, ``delete_user()``,

@@ -23,6 +23,7 @@ from .class_helpers import ConnectionHelper
 from .tak_home_api import HomeApi
 from .tak_file_user_account_management_api import UserAccountManagementApi
 from .tak_group_api import GroupApi
+from .tak_data_feed_api import DataFeedApi
 from .tak_mission_api import MissionApi
 
 
@@ -47,6 +48,7 @@ class Server:
         self.home = HomeApi(self)
         self.user = UserAccountManagementApi(self)
         self.groups = GroupApi(self)
+        self.datafeeds = DataFeedApi(self)
         self.mission = MissionApi(self)
 
     async def close(self) -> None:

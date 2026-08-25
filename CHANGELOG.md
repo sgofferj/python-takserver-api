@@ -13,6 +13,21 @@ development state is tracked under `[Unreleased]`.
 
 ### Added
 
+- Data Feed API (`DataFeedApi`, `server.datafeeds`): complete wrapper for
+  the `data-feed-api` tag - `get_data_feeds()`,
+  `get_data_feeds_in_bbox()`, `get_data_feeds_in_polygon()` (a GET-with-
+  body endpoint; `ConnectionHelper.request()` now passes JSON bodies on
+  GET), `create_predicate_data_feed()`, `update_predicate_data_feed()`,
+  `delete_predicate_data_feed()`, `get_predicate_data_feed()`,
+  `get_stats()`, `get_stats_for_feed()`, `get_existing_cot_types()`,
+  `get_cots_by_cot_type()`. Plus the `build_predicate_feed()` helper that
+  constructs a complete feed body (minimal bodies are rejected with HTTP
+  500) and defaults `filter_groups` to `["__ANON__"]` to avoid the
+  verified-live access lockout: a feed created with an empty filter-group
+  list denies EVERYONE - including the admin - read, update and delete
+  access. Shared ApiResponse unwrapping moved into
+  `class_helpers.unwrap_api_response()`. 13 unit tests; live tests create,
+  exercise, rename and delete their own predicate feed.
 - Group API (`GroupApi`, `server.groups`): complete wrapper for the
   `groups-api` tag - `get_all_groups()`, `get_groups_for_user()`,
   `get_group()`, `set_active_groups()` (absolute semantics, optional
