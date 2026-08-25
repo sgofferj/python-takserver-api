@@ -57,8 +57,8 @@ async def test_create_or_update_user_with_groups() -> None:
             data: str | None = None,
         ) -> tuple[int, Any]:
             assert json is not None
-            assert json["groupListIN"] == ["readers"]
-            assert json["groupListOUT"] == ["writers"]
+            assert json["groupListIN"] == ["writers"]
+            assert json["groupListOUT"] == ["readers"]
             assert json["groupList"] == ["both"]
             return 201, {"username": "op2"}
 
@@ -71,8 +71,8 @@ async def test_create_or_update_user_with_groups() -> None:
     status, data = await api.create_or_update_file_user(
         username="op2",
         password="hunter2",  # pragma: allowlist secret
-        group_list_in=["readers"],
-        group_list_out=["writers"],
+        group_list_in=["writers"],
+        group_list_out=["readers"],
         group_list_both=["both"],
     )
     assert status == 201
@@ -374,8 +374,8 @@ async def test_create_file_users_in_bulk() -> None:
                 "startN": 1,
                 "endN": 3,
                 "groupList": ["both"],
-                "groupListIN": ["readers"],
-                "groupListOUT": ["writers"],
+                "groupListIN": ["writers"],
+                "groupListOUT": ["readers"],
             }
             return 200, [{"username": "bulk-1", "password": "pw1"}]  # pragma: allowlist secret
 
@@ -390,8 +390,8 @@ async def test_create_file_users_in_bulk() -> None:
         start_n=1,
         end_n=3,
         group_list=["both"],
-        group_list_in=["readers"],
-        group_list_out=["writers"],
+        group_list_in=["writers"],
+        group_list_out=["readers"],
     )
     assert status == 200
     assert data[0]["username"] == "bulk-1"
@@ -522,8 +522,8 @@ async def test_update_groups_for_user() -> None:
             assert json == {
                 "username": "op1",
                 "groupList": ["both"],
-                "groupListIN": ["readers"],
-                "groupListOUT": ["writers"],
+                "groupListIN": ["writers"],
+                "groupListOUT": ["readers"],
             }
             return 200, None
 
@@ -536,8 +536,8 @@ async def test_update_groups_for_user() -> None:
     status, _ = await api.update_groups_for_user(
         username="op1",
         group_list=["both"],
-        group_list_in=["readers"],
-        group_list_out=["writers"],
+        group_list_in=["writers"],
+        group_list_out=["readers"],
     )
     assert status == 200
 

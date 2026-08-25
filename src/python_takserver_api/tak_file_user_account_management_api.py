@@ -181,7 +181,9 @@ class UserAccountManagementApi:
         substituted with the running number from ``start_n`` to ``end_n``,
         e.g. ``"live-test-user-[N]"`` with ``start_n=1``, ``end_n=3``
         creates ``live-test-user-1`` .. ``live-test-user-3``. The server
-        rejects requests without ``group_list`` (HTTP 400).
+        rejects requests without ``group_list`` (HTTP 400). Directions:
+        `group_list_in` = send-into memberships, `group_list_out` =
+        receive-from memberships.
         Returns a list of UserPasswordModel with the generated passwords.
         """
         path = f"{await self._base()}/new-users"
@@ -208,7 +210,10 @@ class UserAccountManagementApi:
         """Replace the user membership of a group (SimpleGroupWithUsersModel)
 
         The three user lists are always sent - the server replies with
-        HTTP 500 when any of them is omitted.
+        HTTP 500 when any of them is omitted. Directions are from the
+        group's point of view: `users_in_group_list_in` lists users who
+        may send INTO the group, `users_in_group_list_out` users who
+        receive its traffic, and `users_in_group_list` covers both.
         """
         path = f"{await self._base()}/update-group-users"
         url = self.server.api_base_url + path
@@ -232,7 +237,10 @@ class UserAccountManagementApi:
         """Replace the group membership of a user (SimpleUserGroupModel)
 
         The three group lists are always sent - the server replies with
-        HTTP 500 when any of them is omitted.
+        HTTP 500 when any of them is omitted. Directions are from the
+        group's point of view: `group_list_in` = groups the user may send
+        into, `group_list_out` = groups whose traffic they receive,
+        `group_list` = both directions.
         """
         path = f"{await self._base()}/update-groups"
         url = self.server.api_base_url + path
