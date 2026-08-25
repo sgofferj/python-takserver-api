@@ -49,35 +49,69 @@ Currently covered classes:
      - 10 of 15 spec operations
      - Complete; 5 ops broken server-side, not wrapped
 
-Detailed method lists: Home API — ``is_admin()``, ``get_home()``,
-``get_user_roles()``, helpers ``has_role()``, ``server_version()``.
-Mission API — all name-based mission endpoints of the live spec, plus
-``build_mission_package()`` / ``add_mission_package()`` and the
-single-keyword content helpers ``delete_content_keyword_by_hash()`` /
-``delete_content_keyword_by_uid()``.
-Group API — channels (group subscriptions): raw wrappers for
-``/Marti/api/groups/*`` plus helpers ``get_active_groups()``,
-``subscribe()`` / ``subscribe_many()``, ``unsubscribe()`` /
-``unsubscribe_many()``, ``is_subscribed()``, ``get_channels()``,
-``channel_exists()``, ``wait_for_group_update_until()``.
-Note: subscription helpers need the caller's username — pass
-``Server(..., username=...)`` (the certificate CN) or give an explicit
-``username=`` argument. See the Groups-API wiki page for scope notes
-(entitlements vs. available channels vs. active subscriptions).
-Data Feed API — predicate feed CRUD plus catalog/bounds queries,
-statistics and content access; ``build_predicate_feed()`` builds a safe
-feed body (see the Data-Feeds-API wiki page for the filter-groups
-access-lockout trap).
-Cert Manager API — admin certificate listing/filtering, single-record
-fetch, PEM download, revocation and deletion. The user-side TLS
-enrollment endpoints are not wrapped (server answers 403 even to
-admins); see the Cert-Manager-API wiki page.
-User API — ``get_all_users()``, ``get_all_group_names()``,
-``create_or_update_file_user()``, ``get_users_in_group()``,
-``get_groups_for_user()``, ``change_user_password()``, ``delete_user()``,
-``create_file_users_in_bulk()``, ``update_users_for_group()``,
-``update_groups_for_user()``, helpers ``user_exists()``,
-``group_exists()``.
+**Home API** — ``server.home``
+
+* ``is_admin()`` · ``get_home()`` · ``get_user_roles()``
+* Helpers: ``has_role()`` · ``server_version()``
+
+**User Account Management API** — ``server.user``
+
+* Users: ``get_all_users()`` · ``user_exists()`` ·
+  ``create_or_update_file_user()`` · ``change_user_password()`` ·
+  ``delete_user()`` · ``create_file_users_in_bulk()``
+* Groups: ``get_all_group_names()`` · ``group_exists()`` ·
+  ``get_users_in_group()`` · ``update_users_for_group()`` ·
+  ``get_groups_for_user()`` · ``update_groups_for_user()``
+
+**Group API** — ``server.groups`` *(channel subscriptions)*
+
+* Catalog & lookup: ``get_all_groups()`` · ``get_group()`` ·
+  ``get_channels()`` · ``channel_exists()``
+* Subscriptions: ``set_active_groups()`` · ``set_active_groups_bits()`` ·
+  ``set_active_groups_force()`` · ``wait_for_group_update()``
+* Helpers: ``get_active_groups()`` · ``subscribe()`` /
+  ``subscribe_many()`` · ``unsubscribe()`` / ``unsubscribe_many()`` ·
+  ``is_subscribed()`` · ``wait_for_group_update_until()``
+* LDAP: ``get_ldap_groups()`` · ``get_ldap_group_members()``
+* Note: subscription helpers need the caller's username — pass
+  ``Server(..., username=...)`` (the certificate CN) or give an explicit
+  ``username=`` argument. See the Groups-API wiki page for scope notes
+  (entitlements vs. available channels vs. active subscriptions).
+
+**Data Feed API** — ``server.datafeeds``
+
+* Catalog: ``get_data_feeds()`` · ``get_data_feeds_in_bbox()`` ·
+  ``get_data_feeds_in_polygon()``
+* Predicate feeds: ``build_predicate_feed()`` ·
+  ``create_predicate_data_feed()`` · ``update_predicate_data_feed()`` ·
+  ``delete_predicate_data_feed()`` · ``get_predicate_data_feed()``
+* Stats & content: ``get_stats()`` · ``get_stats_for_feed()`` ·
+  ``get_existing_cot_types()`` · ``get_cots_by_cot_type()``
+* See the Data-Feeds-API wiki page for the filter-groups access-lockout
+  trap.
+
+**Cert Manager API** — ``server.certs`` *(admin only)*
+
+* Listing: ``get_certificates(username=None)`` ·
+  ``get_active_certificates()`` · ``get_expired_certificates()`` ·
+  ``get_replaced_certificates()`` · ``get_revoked_certificates()``
+* Records: ``get_certificate()`` · ``download_certificate()``
+* Mutations: ``revoke_certificates()`` · ``delete_certificates()`` ·
+  ``delete_certificate()``
+* The user-side TLS enrollment endpoints are not wrapped (server answers
+  403 even to admins); see the Cert-Manager-API wiki page.
+
+**Mission API** — ``server.mission``
+
+* All name-based mission endpoints of the live spec: lifecycle
+  (create/delete/copy/archive/expiration/parent), content, content
+  keywords, external data, invitations, passwords, tokens, layers,
+  map layers, feeds, logs and subscriptions
+* Global endpoints: mission count/names, paged list,
+  all-invitations/logs/subscriptions
+* Extras: ``build_mission_package()`` / ``add_mission_package()`` and the
+  single-keyword content helpers ``delete_content_keyword_by_hash()`` /
+  ``delete_content_keyword_by_uid()``
 
 Endpoints that are proven not to work on the reference server are
 deliberately NOT wrapped (e.g. home-api ``getVer`` / ``GET /Marti/api/ver``
