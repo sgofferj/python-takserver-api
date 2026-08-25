@@ -53,7 +53,9 @@ class ConnectionHelper:
             r: Any = "Error"
             match method:
                 case "get" | "GET":
-                    r = await self.server.session.get(url, headers=headers)
+                    # some endpoints (e.g. datafeeds/bounds/polygon) are
+                    # GETs with a JSON body
+                    r = await self.server.session.get(url, headers=headers, json=json)
                 case "post" | "POST":
                     if data is not None:
                         r = await self.server.session.post(url, headers=headers, data=data)
@@ -78,3 +80,16 @@ class ConnectionHelper:
         ) as e:
             r = str(e)
             return 999, r
+
+
+def unwrap_api_response(payload: Any) -> Any:
+    """Extract the `data` field of a TAK ApiResponse envelope.
+
+    TAK endpoints answer with `{"version", "type", "data", ...}` envelopes;
+    callers normally want the payload itself. Anything that does not look
+    like an envelope (error text, plain values) passes through unchanged.
+    An envelope without a `data` field yields `None`.
+    """
+    if isinstance(payload, dict) and "version" in payload and "type" in payload:
+        return payload.get("data")
+    return payload

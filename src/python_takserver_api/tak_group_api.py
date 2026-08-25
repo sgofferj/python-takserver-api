@@ -32,6 +32,8 @@ import asyncio
 from collections.abc import Sequence
 from typing import Any
 
+from .class_helpers import unwrap_api_response
+
 
 class GroupApi:
     """Group (channel subscription) API wrapper"""
@@ -53,9 +55,7 @@ class GroupApi:
         (e.g. a user without any groups) omit the `data` field entirely -
         in that case `None` is returned.
         """
-        if isinstance(payload, dict) and "version" in payload and "type" in payload:
-            return payload.get("data")
-        return payload
+        return unwrap_api_response(payload)
 
     async def get_all_groups(self, use_cache: bool = False, send_latest_sa: bool = False) -> tuple[int, Any]:
         """Returns the channels available to the authenticated user.
