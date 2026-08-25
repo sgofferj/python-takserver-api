@@ -930,3 +930,56 @@ class MissionApi:
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("post", url, headers=headers, json=uids)
         return s, r
+
+    async def get_resource(self, hash_id: str) -> tuple[int, Any]:
+        """Returns the resource records stored under a content hash."""
+        path = f"/Marti/api/resources/{hash_id}"
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("get", url, headers=headers)
+        return s, r
+
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
+    async def search_sync(
+        self,
+        box: str | None = None,
+        circle: str | None = None,
+        start_time: str | None = None,
+        end_time: str | None = None,
+        min_altitude: float | None = None,
+        max_altitude: float | None = None,
+        filename: str | None = None,
+        keyword: list[str] | None = None,
+        mimetype: str | None = None,
+        name: str | None = None,
+        uid: str | None = None,
+        hash: str | None = None,  # pylint: disable=redefined-builtin
+        mission: str | None = None,
+        tool: str | None = None,
+    ) -> tuple[int, Any]:
+        """Searches mission data sync contents.
+
+        All parameters are optional filters; `box` is a bounding box
+        ("minLon,minLat,maxLon,maxLat"), `circle` a
+        "lat,lon,radius(meters)" query. `keyword` may be repeated.
+        """
+        path = "/Marti/api/sync/search" + _query(
+            box=box,
+            circle=circle,
+            startTime=start_time,
+            endTime=end_time,
+            minAltitude=min_altitude,
+            maxAltitude=max_altitude,
+            filename=filename,
+            keyword=keyword,
+            mimetype=mimetype,
+            name=name,
+            uid=uid,
+            hash=hash,
+            mission=mission,
+            tool=tool,
+        )
+        url = self.server.api_base_url + path
+        headers = {"Content-Type": "application/json"}
+        s, r = await self.server.connection.request("get", url, headers=headers)
+        return s, r

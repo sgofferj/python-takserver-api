@@ -48,6 +48,14 @@ async def test_mission_crud(server) -> None:
 
         status, data = await server.mission.get_mission_changes(name)
         assert status == 200, data
+
+        # search_sync finds the mission by name filter (read-only)
+        status, data = await server.mission.search_sync(mission=name)
+        assert status == 200, data
+
+        # get_resource on a bogus hash answers 404 without side effects
+        status, _ = await server.mission.get_resource("live-test-nonexistent-hash")
+        assert status in (200, 404)
     finally:
         status, data = await server.mission.delete_mission(name, creator_uid=creator_uid, deep_delete=True)
         assert status in (200, 404), (status, data)

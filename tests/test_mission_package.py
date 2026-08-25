@@ -56,6 +56,39 @@ class RequestCase(NamedTuple):
 
 MISSION_REQUEST_CASES: list[RequestCase] = [
     RequestCase(
+        "get_resource",
+        {"hash_id": "abc123"},
+        "get",
+        "https://tak.example.com:8443/Marti/api/resources/abc123",
+        None,
+        None,
+        {"Content-Type": "application/json"},
+    ),
+    RequestCase(
+        "search_sync",
+        {
+            "box": "1.0,2.0,3.0,4.0",
+            "keyword": ["kw1", "kw2"],
+            "mission": "my-mission",
+            "min_altitude": 100.5,
+        },
+        "get",
+        "https://tak.example.com:8443/Marti/api/sync/search?box=1.0%2C2.0%2C3.0%2C4.0"
+        "&minAltitude=100.5&keyword=kw1&keyword=kw2&mission=my-mission",
+        None,
+        None,
+        {"Content-Type": "application/json"},
+    ),
+    RequestCase(
+        "search_sync",
+        {},
+        "get",
+        "https://tak.example.com:8443/Marti/api/sync/search",
+        None,
+        None,
+        {"Content-Type": "application/json"},
+    ),
+    RequestCase(
         "get_mission_count",
         {"password_protected": True, "tool": "public"},
         "get",
