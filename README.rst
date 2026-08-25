@@ -36,6 +36,10 @@ Currently covered classes:
      - ``server.user``
      - 10 of 10 spec operations
      - Complete, incl. helpers
+   * - ``GroupApi``
+     - ``server.groups``
+     - 10 of 10 spec operations
+     - Complete, incl. helpers
 
 Detailed method lists: Home API — ``is_admin()``, ``get_home()``,
 ``get_user_roles()``, helpers ``has_role()``, ``server_version()``.
@@ -43,6 +47,15 @@ Mission API — all name-based mission endpoints of the live spec, plus
 ``build_mission_package()`` / ``add_mission_package()`` and the
 single-keyword content helpers ``delete_content_keyword_by_hash()`` /
 ``delete_content_keyword_by_uid()``.
+Group API — channels (group subscriptions): raw wrappers for
+``/Marti/api/groups/*`` plus helpers ``get_active_groups()``,
+``subscribe()`` / ``subscribe_many()``, ``unsubscribe()`` /
+``unsubscribe_many()``, ``is_subscribed()``, ``get_channels()``,
+``channel_exists()``, ``wait_for_group_update_until()``.
+Note: subscription helpers need the caller's username — pass
+``Server(..., username=...)`` (the certificate CN) or give an explicit
+``username=`` argument. See the Groups-API wiki page for scope notes
+(entitlements vs. available channels vs. active subscriptions).
 User API — ``get_all_users()``, ``get_all_group_names()``,
 ``create_or_update_file_user()``, ``get_users_in_group()``,
 ``get_groups_for_user()``, ``change_user_password()``, ``delete_user()``,
