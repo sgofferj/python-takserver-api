@@ -13,6 +13,16 @@ development state is tracked under `[Unreleased]`.
 
 ### Added
 
+- Submission API (`SubmissionApi`, `server.submission`): complete wrapper
+  for the `submission-api` tag - input metrics (`get_input_metrics()`,
+  `get_input_metric()`), named streaming data-feed registry
+  (`create_data_feed()`, `get_data_feed()`, `modify_data_feed()`,
+  `delete_data_feed()`), messaging configuration
+  (`get_config_info()`, `modify_config_info()`), store-and-forward chat
+  toggles and database CoT counters. Live-verified server bugs: creating
+  new inputs or named data feeds fails with HTTP 400 regardless of body
+  (server-side NPE during validation); wrapped anyway with guard tests.
+  9 unit tests; 7 live tests including a state-restoring S&F-chat toggle.
 - Certificate Manager API (`CertManagerApi`, `server.certs`): complete
   wrapper for the `cert-manager-admin-api` tag - `get_certificates()`
   (with optional username filter), `get_active_certificates()`,
