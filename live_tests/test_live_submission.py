@@ -6,12 +6,14 @@ NEVER in CI.
 Read-only coverage for the input/config/counter endpoints, plus a
 state-restoring toggle check of the store-and-forward chat flag.
 
-Creation of new inputs / named streaming data feeds is BROKEN on the
-reference server (5.7-RELEASE-43-HEAD): the server throws an NPE inside
-its own validation and answers HTTP 400 regardless of body. Those
-operations are wrapped anyway; guard tests pin that behaviour so a
-fixing upgrade gets noticed.
+Input CRUD works live (names must match [A-Za-z0-9_], max 30 chars -
+hyphens are rejected as "Invalid input name"). Creation/modification of
+NAMED STREAMING DATA FEEDS (/Marti/api/datafeeds) is broken on the
+reference server: empty HTTP 500 regardless of body. Guard tests pin
+that behaviour so a fixing upgrade gets noticed.
 """
+
+import uuid
 
 import pytest
 
@@ -86,27 +88,74 @@ async def test_store_forward_chat_toggle_restores_state(server) -> None:
 
 
 @pytest.mark.asyncio
-async def test_guard_create_input_still_broken(server) -> None:
-    """createInput still fails with 400 (server-side NPE)."""
+async def test_input_crud_cycle(server) -> None:
+    """Create -> read -> modify -> delete a dedicated input on port 8091.
+
+    Port 8091 was added to the stack for exactly this purpose; the input
+    is deleted again immediately. archive stays False (never archive a
+    high-volume ephemeral feed - Postgres bloat risk).
+    """
+    import uuid
+
+    api = server.submission
+    name = f"live_test_inp_{uuid.uuid4().hex[:6]}"
     body = {
-        "name": "live-test-inp-guard",
+        "name": name,
         "protocol": "tls",
         "port": 8091,
         "auth": "X_509",
         "archive": False,
         "coreVersion": 2,
     }
-    status, _ = await server.submission.create_input(body)
-    assert status == 400
+    status, created = await api.create_input(body)
+    assert status == 200, f"create failed: {created}"
+
+    try:
+        status, metric = await api.get_input_metric(name)
+        assert status == 200 and metric["input"]["name"] == name
+        input_id = metric["id"]
+
+        # appears in the general listing too
+        status, metrics = await api.get_input_metrics()
+        assert name in [m["input"]["name"] for m in metrics]
+
+        # modify: flip archive flag via PUT by id. NOTE: on the reference
+        # server the messaging layer answers 400 for freshly created
+        # inputs here (verified live 2026-08-25); accept either outcome
+        # but only assert state when the write reported success.
+        modified = dict(metric["input"])
+        modified["archive"] = True
+        status, _ = await api.modify_input(input_id, modified)
+        if status == 200:
+            _, after = await api.get_input_metric(name)
+            assert after["input"]["archive"] is True
+    finally:
+        status, _ = await api.delete_input(name)
+        assert status == 200
+
+    # deletion quirk: the metric endpoint keeps answering 200, but with a
+    # null payload once the input is gone
+    status, metric = await api.get_input_metric(name)
+    gone_from_list = True
+    status2, metrics = await api.get_input_metrics()
+    gone_from_list = name not in [m["input"]["name"] for m in metrics]
+    assert gone_from_list
 
 
 @pytest.mark.asyncio
 async def test_guard_data_feed_creation_still_broken(server) -> None:
-    """createDataFeed still fails with 400/500 (same validation NPE)."""
-    status, certs_body = await server.submission.get_input_metrics()
-    template = dict(certs_body[0]["input"])
-    template["name"] = "live-test-df-guard"
-    template["port"] = 8091
-    template["archive"] = False
+    """createDataFeed still fails with an empty HTTP 500."""
+    template = {
+        "name": f"live_test_df_{uuid.uuid4().hex[:6]}",
+        "protocol": "tls",
+        "port": 8091,
+        "auth": "X_509",
+        "type": "Streaming",
+        "sync": False,
+        "archive": False,
+        "coreVersion": 2,
+        "filtergroup": [],
+        "tags": [],
+    }
     status, _ = await server.submission.create_data_feed(template)
     assert status in (400, 500)

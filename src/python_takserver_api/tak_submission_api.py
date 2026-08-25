@@ -22,12 +22,18 @@ streams and their metrics, streaming data-feed registry (`/datafeeds`
 by name), database counters, the store-and-forward chat feature flag
 and the global messaging configuration.
 
-> **SERVER BUGS (verified live on 5.7-RELEASE-43-HEAD, 2026-08-25):**
-> - `createInput()` fails with HTTP 400 for every body shape (an NPE in
->   the server's `getValidationErrors` kills new-input creation).
-> - `createDataFeed()` / `modifyDataFeed()` fail the same way.
-> The wrappers are provided regardless; live tests pin the current
-> behaviour so a fixing upgrade gets noticed.
+> **NAMING RULE:** input and feed names must match `[A-Za-z0-9_]` plus
+> whitespace, max 30 characters - hyphens are rejected with
+> "Invalid input name".
+>
+> **SERVER QUIRKS (verified live on 5.7-RELEASE-43-HEAD, 2026-08-25):**
+> - Input/feed names must match `[A-Za-z0-9_]` plus whitespace, max 30
+>   chars - hyphens are rejected ("Invalid input name").
+> - `modify_input()` is rejected (HTTP 400) by the messaging layer for
+>   freshly created inputs.
+> - `create_data_feed()` / `modify_data_feed()` fail with an empty HTTP
+>   500 regardless of body.
+> Live tests pin the broken behaviour so a fixing upgrade gets noticed.
 """
 
 from typing import Any
@@ -109,8 +115,8 @@ class SubmissionApi:
     async def create_data_feed(self, feed: dict[str, Any]) -> tuple[int, Any]:
         """Creates a named streaming data feed.
 
-        > **Broken on the reference server:** same validation NPE as
-        > `create_input()` - HTTP 400 regardless of body.
+        > **Broken on the reference server:** answers an empty HTTP 500
+        > regardless of body (verified live 2026-08-25).
         """
         path = "/Marti/api/datafeeds"
         url = self.server.api_base_url + path
