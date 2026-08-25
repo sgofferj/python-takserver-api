@@ -13,6 +13,19 @@ development state is tracked under `[Unreleased]`.
 
 ### Added
 
+- Certificate Manager API (`CertManagerApi`, `server.certs`): complete
+  wrapper for the `cert-manager-admin-api` tag - `get_certificates()`
+  (with optional username filter), `get_active_certificates()`,
+  `get_expired_certificates()`, `get_replaced_certificates()`,
+  `get_revoked_certificates()`, `get_certificate()`,
+  `download_certificate()` (returns PEM text),
+  `delete_certificate()`, `delete_certificates()`,
+  `revoke_certificates()`. The user-side `cert-manager-api` endpoints
+  (`tls/config`, `makeClientKeyStore`, `signClient[/v2]`) are deliberately
+  NOT wrapped: they answer HTTP 403 even for an admin certificate on the
+  reference server, as does `cert/download/{ids}` (HTTP 500 with valid
+  hashes). Live tests assert those failures so a fixing upgrade gets
+  noticed. 12 unit tests; 10 live tests.
 - Data Feed API (`DataFeedApi`, `server.datafeeds`): complete wrapper for
   the `data-feed-api` tag - `get_data_feeds()`,
   `get_data_feeds_in_bbox()`, `get_data_feeds_in_polygon()` (a GET-with-
