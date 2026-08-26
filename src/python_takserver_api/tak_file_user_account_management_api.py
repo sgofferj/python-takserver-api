@@ -117,16 +117,26 @@ class UserAccountManagementApi:
         return s, r
 
     async def user_exists(self, user: str) -> bool:
-        """Check if a user exists on the server"""
-        _, r = await self.get_all_users()
-        g = next((item for item in r if item["username"] == user), None)
-        return bool(g)
+        """Check if a user exists on the server.
+
+        Returns `False` when the request fails (non-200 or unparsable
+        body), not an exception - check the underlying `get_all_users()`
+        yourself if you need to distinguish "absent" from "server error".
+        """
+        s, r = await self.get_all_users()
+        if s != 200 or not isinstance(r, list):
+            return False
+        return any(isinstance(item, dict) and item.get("username") == user for item in r)
 
     async def group_exists(self, group: str) -> bool:
-        """Check if a group exists on the server"""
-        _, r = await self.get_all_group_names()
-        g = next((item for item in r if item["groupname"] == group), None)
-        return bool(g)
+        """Check if a group exists on the server.
+
+        As with `user_exists()`, a failing request yields `False`.
+        """
+        s, r = await self.get_all_group_names()
+        if s != 200 or not isinstance(r, list):
+            return False
+        return any(isinstance(item, dict) and item.get("groupname") == group for item in r)
 
     async def get_users_in_group(self, group: str) -> tuple[int, Any]:
         """Returns a group record with its member list"""

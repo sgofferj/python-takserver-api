@@ -230,7 +230,11 @@ async def test_build_predicate_feed_defaults() -> None:
     assert feed["predicateLang"] == "JSON_PATH"
     assert feed["filterGroups"] == ["__ANON__"]  # avoids the access lockout
     assert feed["authType"] == "ANONYMOUS"
-    assert feed["archive"] is True
+    assert feed["archive"] is False  # safe default: archiving bloats Postgres
+    assert feed["sync"] is False
+
+    feed_archived = DataFeedApi.build_predicate_feed("x", "p", archive=True)
+    assert feed_archived["archive"] is True
 
     feed2 = DataFeedApi.build_predicate_feed("x", "p", auth_type="X_509", filter_groups=["MY_GROUP"])
     assert feed2["filterGroups"] == ["MY_GROUP"]

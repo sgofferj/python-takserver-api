@@ -1,5 +1,6 @@
 """Tests for the Group (channel subscription) API"""
 
+import asyncio
 from typing import Any
 
 import pytest
@@ -380,3 +381,136 @@ async def test_is_subscribed_explicit_username() -> None:
 
     api, _ = make_api(handler)
     assert await api.is_subscribed("chan-a", username="other-user") is True
+
+
+@pytest.mark.asyncio
+async def test_unsubscribe_many_removes_all_requested_directions() -> None:
+    """unsubscribe_many strips the requested channels in one write"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        if url.endswith("/groups/user?username=testadmin"):
+            return 200, {
+                "version": "3",
+                "type": "...",
+                "data": [
+                    _group("chan-a", "IN", active=True),
+                    _group("chan-a", "OUT", active=True),
+                    _group("chan-b", "IN", active=True),
+                ],
+            }
+        assert method == "put"
+        assert json == [{"name": "chan-b", "direction": "IN"}]
+        return 200, None
+
+    api, _ = make_api(handler)
+    status, _ = await api.unsubscribe_many(["chan-a"])
+    assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_unsubscribe_many_keeps_other_channels() -> None:
+    """unsubscribe_many ignores unknown names and keeps unrelated directions"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        if url.endswith("/groups/user?username=testadmin"):
+            return 200, {
+                "version": "3",
+                "type": "...",
+                "data": [_group("chan-a", "OUT", active=True), _group("chan-b", "IN", active=True)],
+            }
+        assert json == [{"name": "chan-a", "direction": "OUT"}]
+        return 200, None
+
+    api, _ = make_api(handler)
+    await api.unsubscribe_many(["ghost", " chan-b "], directions=["IN"])
+
+
+@pytest.mark.asyncio
+async def test_wait_for_group_update_until_returns_on_change() -> None:
+    """wait_for_group_update_until returns the payload when a change arrives"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        assert "/groups/update/testadmin" in url
+        return 200, {"version": "3", "type": "...", "data": True}
+
+    api, _ = make_api(handler)
+    status, result = await api.wait_for_group_update_until("testadmin", timeout=5.0)
+    assert status == 200
+    assert result["data"] is True
+
+
+@pytest.mark.asyncio
+async def test_wait_for_group_update_until_times_out() -> None:
+    """wait_for_group_update_until raises TimeoutError when nothing changes"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        await asyncio.sleep(5)
+        raise AssertionError("should not complete")
+
+    api, _ = make_api(handler)
+    with pytest.raises(TimeoutError):
+        await api.wait_for_group_update_until("testadmin", timeout=0.05)
+
+
+@pytest.mark.asyncio
+async def test_get_channels_collapses_duplicates() -> None:
+    """get_channels returns one record per channel with direction flags"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        assert "/groups/all" in url
+        return 200, {
+            "version": "3",
+            "type": "...",
+            "data": [
+                _group("chan-b", "IN", active=True),
+                _group("chan-a", "IN", active=False),
+                _group("chan-a", "OUT", active=True),
+            ],
+        }
+
+    api, _ = make_api(handler)
+    channels = await api.get_channels()
+    assert [c["name"] for c in channels] == ["chan-a", "chan-b"]
+    assert channels[0]["directions"] == {"IN": False, "OUT": True}
+    assert channels[1]["directions"] == {"IN": True}
+
+
+@pytest.mark.asyncio
+async def test_channel_exists_true_and_false() -> None:
+    """channel_exists matches padded spellings and rejects unknown names"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        return 200, {
+            "version": "3",
+            "type": "...",
+            "data": [_group(" chan-a ", "IN"), _group("chan-b", "OUT")],
+        }
+
+    api, _ = make_api(handler)
+    assert await api.channel_exists("chan-a") is True
+    assert await api.channel_exists("chan-b") is True
+    assert await api.channel_exists("ghost") is False
+
+
+@pytest.mark.asyncio
+async def test_get_active_groups_raises_clear_error_on_server_error() -> None:
+    """get_active_groups raises ValueError instead of crashing on error text"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        return 500, "<html>Server Error</html>"
+
+    api, _ = make_api(handler)
+    with pytest.raises(ValueError, match="HTTP 500"):
+        await api.get_active_groups()
+
+
+@pytest.mark.asyncio
+async def test_is_subscribed_raises_clear_error_on_server_error() -> None:
+    """is_subscribed raises ValueError instead of crashing on error text"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        return 403, "Group access denied"
+
+    api, _ = make_api(handler)
+    with pytest.raises(ValueError, match="HTTP 403"):
+        await api.is_subscribed("chan-a")

@@ -34,17 +34,30 @@ from .tak_mission_api import MissionApi
 class Server:
     """Takserver API helper class"""
 
-    def __init__(self, host: str, cert: str, key: str, username: str | None = None) -> None:
+    # pylint: disable=too-many-arguments, too-many-positional-arguments
+    def __init__(
+        self,
+        host: str,
+        cert: str,
+        key: str,
+        username: str | None = None,
+        ca_cert: str | None = None,
+    ) -> None:
         """Initialize a server instance.
 
         `username` is optional and only needed by APIs that address the
         authenticated user by name (e.g. the group subscription helpers).
         For certificate auth it is the certificate's CN.
+
+        `ca_cert` optionally points at a PEM file with the CA (or the
+        self-signed server certificate itself) used to VERIFY the server.
+        When given, server certificate and hostname are checked; without
+        it, verification is skipped (legacy behaviour, see README).
         """
         self.api_base_url = f"https://{host}:8443"
         self.username = username
 
-        self.connection = ConnectionHelper(self, cert, key)
+        self.connection = ConnectionHelper(self, cert, key, ca_cert)
         tcpconn = self.connection.get_ssl_context()
         self.session = aiohttp.ClientSession(connector=tcpconn)
 

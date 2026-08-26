@@ -199,6 +199,17 @@ class GroupApi:
             raise ValueError("username required: pass it explicitly or construct Server(..., username=...)")
         return resolved
 
+    @staticmethod
+    def _require_group_list(status: int, payload: Any, source: str) -> list[dict[str, Any]]:
+        """Validates that a group readback succeeded and returned a list.
+
+        Raises `ValueError` with a clear message instead of letting a
+        string error body blow up later with a confusing TypeError.
+        """
+        if status != 200 or not isinstance(payload, list):
+            raise ValueError(f"{source} failed (HTTP {status}): {str(payload)[:200]}")
+        return payload
+
     async def get_active_groups(self, username: str | None = None) -> list[dict[str, Any]]:
         """Returns a user's ACTIVE CHANNEL SUBSCRIPTIONS as `{"name", "direction"}` dicts.
 
@@ -211,10 +222,11 @@ class GroupApi:
         with (`Server(..., username="cn-of-your-cert")`).
         """
         user = self._resolve_username(username)
-        _, r = await self.get_groups_for_user(user)
+        s, r = await self.get_groups_for_user(user)
+        entries = self._require_group_list(s, r, f"get_groups_for_user({user!r})")
         seen: set[tuple[str, str]] = set()
         active: list[dict[str, Any]] = []
-        for g in r or []:
+        for g in entries:
             if not g.get("active"):
                 continue
             key = (g["name"], g["direction"])
@@ -326,8 +338,9 @@ class GroupApi:
         name spelling is preferred. SCOPE NOTE: availability, not
         subscription state - see `get_active_groups()`.
         """
-        _, r = await self.get_all_groups()
-        ordered = sorted(r or [], key=lambda g: g.get("created") or "", reverse=True)
+        s, r = await self.get_all_groups()
+        entries = self._require_group_list(s, r, "get_all_groups")
+        ordered = sorted(entries, key=lambda g: g.get("created") or "", reverse=True)
         ordered.sort(key=lambda g: g["name"] != g["name"].strip())
         channels: dict[str, dict[str, Any]] = {}
         for g in ordered:
@@ -340,8 +353,9 @@ class GroupApi:
 
     async def channel_exists(self, name: str) -> bool:
         """Check if a channel (group) is visible/available to this user"""
-        _, r = await self.get_all_groups()
-        return self._resolve_spelling(r or [], name) is not None
+        s, r = await self.get_all_groups()
+        entries = self._require_group_list(s, r, "get_all_groups")
+        return self._resolve_spelling(entries, name) is not None
 
     async def is_subscribed(
         self,
@@ -357,10 +371,11 @@ class GroupApi:
         by default ANY subscribed direction counts as subscribed.
         """
         user = self._resolve_username(username)
-        _, r = await self.get_groups_for_user(user)
+        s, r = await self.get_groups_for_user(user)
+        entries = self._require_group_list(s, r, f"get_groups_for_user({user!r})")
         matches = [
             g
-            for g in r or []
+            for g in entries
             if g["name"].strip() == name.strip() and (direction is None or g["direction"] == direction.upper())
         ]
         return any(g.get("active") for g in matches)

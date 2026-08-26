@@ -21,6 +21,14 @@ python-takserver-api
 Async Python 3 library wrapping the TAK Server HTTP API. All network I/O uses
 ``asyncio`` + ``aiohttp`` with certificate-based mutual TLS authentication.
 
+.. note::
+   By default the client **does not verify the server certificate**
+   (``CERT_NONE``) because TAK Servers typically run self-signed certs -
+   only the client certificate is presented for mutual TLS. Pass
+   ``ca_cert="/path/to/ca.pem"`` to ``Server()`` to verify the server
+   against a CA (or pin its self-signed certificate directly); hostname
+   checking is then enabled too.
+
 Documentation lives in the project wiki:
 https://github.com/sgofferj/python-takserver-api.wiki
 

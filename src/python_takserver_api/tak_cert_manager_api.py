@@ -120,7 +120,7 @@ class CertManagerApi:
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("get", url, headers=headers)
-        return s, unwrap_api_response(r) if isinstance(r, dict) else r
+        return s, self._unwrap(r)
 
     async def delete_certificate(self, hash_id: str) -> tuple[int, Any]:
         """Deletes a single certificate record by its hash id.

@@ -692,3 +692,53 @@ async def test_um_base_explicit_override_wins() -> None:
 
     api = UserAccountManagementApi(MockServer())
     assert await api._base() == "/Marti/api/user-management/api"
+
+
+@pytest.mark.asyncio
+async def test_user_exists_false_on_server_error() -> None:
+    """user_exists returns False instead of crashing when the server errors"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, str] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            return 500, "<html>Internal Server Error</html>"
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        user_management_base: str = "/user-management/api"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    assert await api.user_exists("op1") is False
+
+
+@pytest.mark.asyncio
+async def test_group_exists_false_on_server_error() -> None:
+    """group_exists returns False instead of crashing when the server errors"""
+    from python_takserver_api.tak_file_user_account_management_api import UserAccountManagementApi
+
+    class MockConnection:  # noqa: N801
+        async def request(
+            self,
+            method: str,
+            url: str,
+            headers: dict[str, str] | None = None,
+            json: dict[str, Any] | None = None,
+            data: str | None = None,
+        ) -> tuple[int, Any]:
+            return 403, "Forbidden"
+
+    class MockServer:  # noqa: N801
+        api_base_url: str = "https://tak.example.com:8443"
+        user_management_base: str = "/user-management/api"
+        connection: Any = MockConnection()
+
+    api = UserAccountManagementApi(MockServer())
+    assert await api.group_exists("admins") is False

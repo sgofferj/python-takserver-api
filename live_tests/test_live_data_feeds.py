@@ -28,6 +28,10 @@ async def feed(server):
         predicate="type == 'a-u'",
         predicate_lang="JSON_PATH",
         source_endpoint="https://localhost:8080",
+        # NEVER archive ephemeral test feeds: every CoT message would be
+        # persisted and bloat Postgres (archive=False is the helper default,
+        # pinned here explicitly so a default flip gets noticed)
+        archive=False,
         # the creating identity must be a member of a filter group,
         # otherwise the feed locks everyone out (403 Group access denied)
         filter_groups=["WOLF_Friends"],

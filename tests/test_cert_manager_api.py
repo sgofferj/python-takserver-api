@@ -178,3 +178,59 @@ async def test_revoke_certificates() -> None:
     api, _ = make_api(handler)
     status, _ = await api.revoke_certificates(["AA", "BB"])
     assert status == 200
+
+
+@pytest.mark.asyncio
+async def test_get_active_certificates() -> None:
+    """get_active_certificates hits the /active endpoint and unwraps"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        assert url.endswith("/Marti/api/certadmin/cert/active")
+        return 200, envelope([CERT])
+
+    api, _ = make_api(handler)
+    status, certs = await api.get_active_certificates()
+    assert status == 200
+    assert certs[0]["hash"] == "AB:CD"
+
+
+@pytest.mark.asyncio
+async def test_get_expired_certificates() -> None:
+    """get_expired_certificates hits the /expired endpoint"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        assert url.endswith("/Marti/api/certadmin/cert/expired")
+        return 200, envelope([])
+
+    api, _ = make_api(handler)
+    status, certs = await api.get_expired_certificates()
+    assert status == 200
+    assert certs == []
+
+
+@pytest.mark.asyncio
+async def test_get_replaced_certificates() -> None:
+    """get_replaced_certificates hits the /replaced endpoint"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        assert url.endswith("/Marti/api/certadmin/cert/replaced")
+        return 200, envelope([])
+
+    api, _ = make_api(handler)
+    status, certs = await api.get_replaced_certificates()
+    assert status == 200
+    assert certs == []
+
+
+@pytest.mark.asyncio
+async def test_get_revoked_certificates() -> None:
+    """get_revoked_certificates hits the /revoked endpoint"""
+
+    async def handler(method: str, url: str, headers: Any, json: Any, data: Any) -> tuple[int, Any]:
+        assert url.endswith("/Marti/api/certadmin/cert/revoked")
+        return 200, envelope([{**CERT, "revocationDate": "2026-01-01"}])
+
+    api, _ = make_api(handler)
+    status, certs = await api.get_revoked_certificates()
+    assert status == 200
+    assert certs[0]["revocationDate"] == "2026-01-01"
