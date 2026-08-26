@@ -3,10 +3,10 @@ name = "python_takserver_api"
 version = "0.1.0"
 description = "Python module for talking to a (tak.gov) tak server"
 authors = [{name="Stefan Gofferje", email="stefan@gofferje.net" }]
-# FIXME: Doublecheck these values
-#homepage = "https://gitlab.com/advian-oss/python-takserver-api/"
-#repository = "https://gitlab.com/advian-oss/python-takserver-api/"
-#license = "FIXME"
+homepage = "https://github.com/sgofferj/python-takserver-api/"
+repository = "https://github.com/sgofferj/python-takserver-api/"
+license = "GPL-3.0-or-later"
+license-files = ["LICENSE"]
 readme = "README.rst"
 dynamic = ["dependencies", "requires-python"]
 

@@ -1,6 +1,22 @@
-=============================
+============================
 python-takserver-api
-=============================
+============================
+
+.. |ci| image:: https://github.com/sgofferj/python-takserver-api/actions/workflows/ci.yml/badge.svg
+        :target: https://github.com/sgofferj/python-takserver-api/actions/workflows/ci.yml
+        :alt: CI status
+.. |license| image:: https://img.shields.io/badge/license-GPL--3.0--or--later-blue.svg
+        :target: LICENSE
+        :alt: License: GPL-3.0-or-later
+.. |python| image:: https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue.svg
+        :alt: Python 3.11-3.13
+.. |takserver| image:: https://img.shields.io/badge/tested%20on%20TAK%20Server-5.7--RELEASE--43--HEAD-4c8cbf.svg
+        :alt: Tested on TAK Server 5.7-RELEASE-43-HEAD
+.. |coverage| image:: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/sgofferj/python-takserver-api/main/docs/badges/api_coverage.json
+        :target: https://github.com/sgofferj/python-takserver-api/blob/main/scripts/generate_coverage_badge.py
+        :alt: API coverage
+
+|ci| |license| |python| |takserver| |coverage|
 
 Async Python 3 library wrapping the TAK Server HTTP API. All network I/O uses
 ``asyncio`` + ``aiohttp`` with certificate-based mutual TLS authentication.
@@ -13,8 +29,9 @@ API surface
 -----------
 
 The library is organized into a ``Server`` class with sub-api accessors,
-each wrapping one tag of the live OpenAPI spec (``tests/openapispec.json``).
-Currently covered classes:
+each wrapping operations of one or more tags of the live OpenAPI spec
+(``tests/openapispec.json``). Coverage numbers below are generated from the
+spec vs. the actual wrappers (see ``scripts/generate_coverage_badge.py``):
 
 .. list-table:: Covered API classes
    :widths: 28 15 20 40
@@ -27,18 +44,22 @@ Currently covered classes:
    * - ``HomeApi``
      - ``server.home``
      - 3 of 4 spec operations
-     - Complete, incl. helpers
+     - Complete; ``getVer`` broken server-side, not wrapped
    * - ``MissionApi``
      - ``server.mission``
-     - 112 of 112 spec operations
-     - Complete, incl. helpers
+     - 103 of 109 spec operations
+     - Complete except mission-parent and guid layer-position reordering
    * - ``UserAccountManagementApi``
      - ``server.user``
      - 10 of 10 spec operations
      - Complete, incl. helpers
    * - ``GroupApi``
      - ``server.groups``
-     - 10 of 10 spec operations
+     - 4 of 6 groups-api operations (+2 LDAP)
+     - Complete for group subscriptions; user-listing ops not wrapped
+   * - ``SubscriptionApi``
+     - ``server.subscriptions``
+     - 12 of 12 subscription-api operations
      - Complete, incl. helpers
    * - ``DataFeedApi``
      - ``server.datafeeds``
@@ -123,8 +144,14 @@ Currently covered classes:
   (create/delete/copy/archive/expiration/parent), content, content
   keywords, external data, invitations, passwords, tokens, layers,
   map layers, feeds, logs and subscriptions
+* The spec's parallel ``/missions/guid/{guid}`` endpoints are covered
+  through query-parameter equivalents on the name-based paths
 * Global endpoints: mission count/names, paged list,
   all-invitations/logs/subscriptions
+* Not wrapped: mission-parent reassignment (``DELETE/PUT
+  .../missions/{name}/parent``), guid-based layer-position reorder and
+  ``POST /Marti/api/missions/{name}`` (creation goes through the body/query
+  variant)
 * Extras: ``build_mission_package()`` / ``add_mission_package()`` and the
   single-keyword content helpers ``delete_content_keyword_by_hash()`` /
   ``delete_content_keyword_by_uid()``
