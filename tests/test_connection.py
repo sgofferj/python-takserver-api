@@ -17,6 +17,7 @@ OPENSSL = shutil.which("openssl")
 
 def _generate_keypair(tmp_path: Any, cn: str = "localhost") -> tuple[str, str]:
     """Generates a throwaway self-signed keypair for SSL context tests"""
+    assert OPENSSL is not None
     cert = tmp_path / "test.pem"
     key = tmp_path / "test.key"
     subprocess.run(
@@ -47,6 +48,7 @@ def _generate_ca_signed_keypair(tmp_path: Any, cn: str = "takserver.local") -> t
 
     Returns (ca_pem, server_cert, server_key) paths.
     """
+    assert OPENSSL is not None
     ca_cert = tmp_path / "ca.pem"
     ca_key = tmp_path / "ca.key"
     subprocess.run(
@@ -67,6 +69,8 @@ def _generate_ca_signed_keypair(tmp_path: Any, cn: str = "takserver.local") -> t
             "/CN=test-ca",
             "-addext",
             "basicConstraints=critical,CA:TRUE",
+            "-addext",
+            "keyUsage=critical,keyCertSign,cRLSign",
         ],
         check=True,
         capture_output=True,
@@ -93,7 +97,12 @@ def _generate_ca_signed_keypair(tmp_path: Any, cn: str = "takserver.local") -> t
         capture_output=True,
     )
     ext = tmp_path / "ext.cnf"
-    ext.write_text("subjectAltName=DNS:takserver.local\n")
+    ext.write_text(
+        "subjectAltName=DNS:takserver.local\n"
+        "basicConstraints=CA:FALSE\n"
+        "keyUsage=critical,digitalSignature,keyEncipherment\n"
+        "extendedKeyUsage=serverAuth\n"
+    )
     subprocess.run(
         [
             OPENSSL,
