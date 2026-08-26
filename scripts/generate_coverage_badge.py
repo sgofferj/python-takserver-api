@@ -184,7 +184,7 @@ def main() -> int:
         "message": f"{covered}/{total} ops",
         "color": color_for(pct),
     }
-    OUT_PATH.write_text(json.dumps(badge) + "\n")
+    OUT_PATH.write_text(json.dumps(badge, sort_keys=True, indent=2, ensure_ascii=False) + "\n")
     print(f"badge written to {OUT_PATH.relative_to(REPO_ROOT)}")
     return 0
 
