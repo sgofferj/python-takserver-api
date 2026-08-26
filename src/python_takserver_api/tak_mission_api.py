@@ -242,13 +242,12 @@ class MissionApi:
         classification: str = "",
     ) -> tuple[int, Any]:
         """Creates a mission"""
-        path = f"/Marti/api/missions/{name}?creatorUid={creator_uid}"
-        if group:
-            path += f"&group={group}"
-        if default_role:
-            path += f"&defaultRole={default_role}"
-        if classification:
-            path += f"&classification={classification}"
+        path = f"/Marti/api/missions/{name}" + _query(
+            creatorUid=creator_uid,
+            group=group or None,
+            defaultRole=default_role or None,
+            classification=classification or None,
+        )
         url = self.server.api_base_url + path
         s, r = await self.server.connection.request("put", url)
         return s, r
@@ -265,17 +264,14 @@ class MissionApi:
         end: str = "",
     ) -> tuple[int, Any]:
         """Creates a mission subscription"""
-        path = f"/Marti/api/missions/{name}/subscription?uid={uid}"
-        if topic:
-            path += f"&topic={topic}"
-        if password:
-            path += f"&password={password}"
-        if secago:
-            path += f"&secago={secago}"
-        if start:
-            path += f"&start={start}"
-        if end:
-            path += f"&end={end}"
+        path = f"/Marti/api/missions/{name}/subscription" + _query(
+            uid=uid,
+            topic=topic or None,
+            password=password or None,
+            secago=secago or None,
+            start=start or None,
+            end=end or None,
+        )
         url = self.server.api_base_url + path
         headers = {"Content-Type": "application/json"}
         s, r = await self.server.connection.request("put", url, headers=headers)
@@ -286,7 +282,7 @@ class MissionApi:
         self, name: str, client_uid: str, username: str, role: str, token: str
     ) -> tuple[int, Any]:
         """Sets the role for a subscriber"""
-        path = f"/Marti/api/missions/{name}/role?clientUid={client_uid}&username={username}&role={role}"
+        path = f"/Marti/api/missions/{name}/role" + _query(clientUid=client_uid, username=username, role=role)
         url = self.server.api_base_url + path
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
         s, r = await self.server.connection.request("put", url, headers=headers)
@@ -294,7 +290,7 @@ class MissionApi:
 
     async def add_mission_content(self, name: str, uids: list[str], my_uid: str, token: str) -> tuple[int, Any]:
         """Adds content to a mission"""
-        path = f"/Marti/api/missions/{name}/contents?creatorUid={my_uid}"
+        path = f"/Marti/api/missions/{name}/contents" + _query(creatorUid=my_uid)
         url = self.server.api_base_url + path
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json"}
         data = {"uids": uids}
@@ -303,7 +299,7 @@ class MissionApi:
 
     async def remove_mission_content(self, name: str, uid: str, my_uid: str, token: str) -> tuple[int, Any]:
         """Removes content from a mission"""
-        path = f"/Marti/api/missions/{name}/contents?creatorUid={my_uid}&uid={uid}"
+        path = f"/Marti/api/missions/{name}/contents" + _query(creatorUid=my_uid, uid=uid)
         headers = {"Authorization": f"Bearer {token}"}
         url = self.server.api_base_url + path
         s, r = await self.server.connection.request("delete", url, headers=headers)
@@ -320,7 +316,7 @@ class MissionApi:
 
         The mission_package bytes can be created with build_mission_package().
         """
-        path = f"/Marti/api/missions/{name}/contents/missionpackage?creatorUid={creator_uid}"
+        path = f"/Marti/api/missions/{name}/contents/missionpackage" + _query(creatorUid=creator_uid)
         url = self.server.api_base_url + path
         headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/octet-stream"}
         s, r = await self.server.connection.request("put", url, headers=headers, data=mission_package)

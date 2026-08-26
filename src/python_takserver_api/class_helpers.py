@@ -22,22 +22,37 @@ import ssl
 import aiohttp
 
 
-class ConnectionHelper:
-    """Helper class for managing connections"""
+def create_client_ssl_context(certfile: str, keyfile: str, ca_file: str | None = None) -> ssl.SSLContext:
+    """Builds the mutual-TLS client context used for all server connections.
 
-    def __init__(self, server: Any, cert: str, key: str) -> None:
-        self.server = server
-        self.cert = cert.strip()
-        self.key = key.strip()
-
-    def get_ssl_context(self) -> aiohttp.TCPConnector:
-        """Returns an SSL context for the connection"""
+    The client certificate is always presented for mTLS. When `ca_file` is
+    given, the SERVER certificate is verified against that CA (hostname
+    check included). Without it the server certificate is deliberately NOT
+    verified (`CERT_NONE`) because TAK Servers typically run with
+    self-signed certificates - only point this at servers you trust.
+    """
+    if ca_file:
+        sslcontext = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH, cafile=ca_file.strip())
+    else:
         sslcontext = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
         sslcontext.check_hostname = False
         sslcontext.verify_mode = ssl.CERT_NONE
-        sslcontext.load_cert_chain(certfile=self.cert, keyfile=self.key)
-        tcpconn = aiohttp.TCPConnector(ssl_context=sslcontext)
-        return tcpconn
+    sslcontext.load_cert_chain(certfile=certfile, keyfile=keyfile)
+    return sslcontext
+
+
+class ConnectionHelper:
+    """Helper class for managing connections"""
+
+    def __init__(self, server: Any, cert: str, key: str, ca_cert: str | None = None) -> None:
+        self.server = server
+        self.cert = cert.strip()
+        self.key = key.strip()
+        self.ca_cert = ca_cert.strip() if ca_cert else None
+
+    def get_ssl_context(self) -> aiohttp.TCPConnector:
+        """Returns an SSL context for the connection"""
+        return aiohttp.TCPConnector(ssl_context=create_client_ssl_context(self.cert, self.key, self.ca_cert))
 
     # pylint: disable=too-many-arguments, too-many-positional-arguments
     async def request(
@@ -50,7 +65,7 @@ class ConnectionHelper:
     ) -> tuple[int, Any]:
         """Performs an HTTP request"""
         try:
-            r: Any = "Error"
+            r: Any
             match method:
                 case "get" | "GET":
                     # some endpoints (e.g. datafeeds/bounds/polygon) are
@@ -68,6 +83,8 @@ class ConnectionHelper:
                         r = await self.server.session.put(url, headers=headers, json=json)
                 case "delete" | "DELETE":
                     r = await self.server.session.delete(url, headers=headers)
+                case _:
+                    raise ValueError(f"unsupported HTTP method: {method!r}")
 
             if r.status >= 400:
                 return r.status, await r.text()

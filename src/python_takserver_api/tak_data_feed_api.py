@@ -56,7 +56,7 @@ class DataFeedApi:
         predicate: str,
         predicate_lang: str = "JSON_PATH",
         source_endpoint: str | None = None,
-        archive: bool = True,
+        archive: bool = False,
         sync: bool = False,
         federated: bool = False,
         auth_type: str = "ANONYMOUS",
@@ -69,6 +69,10 @@ class DataFeedApi:
         complete object. This helper fills in the fields the server needs
         and defaults `filter_groups` to `["__ANON__"]` so the feed stays
         accessible after creation (see the access-trap note above).
+
+        `archive` defaults to `False` ON PURPOSE: archived feeds persist
+        every CoT message in Postgres and quietly bloat the database.
+        Only enable archiving when you really intend to keep the data.
         """
         return {
             "name": name,

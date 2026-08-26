@@ -27,8 +27,6 @@ and the global messaging configuration.
 > "Invalid input name".
 >
 > **SERVER QUIRKS (verified live on 5.7-RELEASE-43-HEAD, 2026-08-25):**
-> - Input/feed names must match `[A-Za-z0-9_]` plus whitespace, max 30
->   chars - hyphens are rejected ("Invalid input name").
 > - `modify_input()` is rejected (HTTP 400) by the messaging layer for
 >   freshly created inputs.
 > - `create_data_feed()` / `modify_data_feed()` fail with an empty HTTP
